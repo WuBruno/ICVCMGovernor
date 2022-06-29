@@ -3,7 +3,8 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
-import hre, { ethers } from "hardhat";
+import hre from "hardhat";
+import { deployContracts } from "~/services/deployment";
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -13,21 +14,7 @@ async function main() {
   // manually to make sure everything is compiled
   await hre.run("compile");
 
-  // Deploy ICVCMToken
-  const ICVCMTokenContract = await ethers.getContractFactory("ICVCMToken");
-  const ICVCMToken = await ICVCMTokenContract.deploy();
-  await ICVCMToken.deployed();
-
-  console.log("ICVCMToken deployed to:", ICVCMToken.address);
-
-  // Deploy Governor
-  const ICVCMGovernorContract = await ethers.getContractFactory(
-    "ICVCMGovernor"
-  );
-  const ICVCMGovernor = await ICVCMGovernorContract.deploy(ICVCMToken.address);
-  await ICVCMGovernor.deployed();
-
-  console.log("ICVCMGovernor deployed to:", ICVCMGovernor.address);
+  return deployContracts();
 }
 
 // We recommend this pattern to be able to use async/await everywhere

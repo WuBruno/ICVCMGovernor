@@ -3,12 +3,14 @@
     "localnode": "yarn hardhat node",
     "compile": "yarn hardhat compile",
     "accounts": "yarn hardhat accounts",
+    "mint:tokens": "yarn hardhat mint_tokens",
     "test": "yarn hardhat test",
     "types": "yarn hardhat typechain",
     "deploy": "yarn hardhat run --network localhost scripts/deploy.ts",
     "deploy:mint": "yarn hardhat run --network localhost scripts/deploy_and_mint.ts",
     "deploy:goerli": "yarn hardhat run --network goerli scripts/deploy.ts",
-    "console": "yarn hardhat console"
+    "console": "yarn hardhat console",
+    "lint": "yarn eslint '**/*.{js,ts}' --fix && yarn prettier '**/*.{json,sol,md}' --write && yarn solhint 'contracts/**/*.sol' --fix"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.0",
@@ -18,9 +20,9 @@
     "@typechain/hardhat": "^2.3.0",
     "@types/chai": "^4.2.21",
     "@types/mocha": "^9.0.0",
-    "@types/node": "^12.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.29.1",
-    "@typescript-eslint/parser": "^4.29.1",
+    "@types/node": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.30.0",
+    "@typescript-eslint/parser": "^5.30.0",
     "chai": "^4.2.0",
     "dotenv": "^16.0.0",
     "eslint": "^7.29.0",
@@ -39,6 +41,7 @@
     "solhint": "^3.3.6",
     "solidity-coverage": "^0.7.16",
     "ts-node": "^10.1.0",
+    "tsconfig-paths": "^4.0.0",
     "typechain": "^5.1.2",
     "typescript": "^4.5.2"
   },
