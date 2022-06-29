@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { writeContractAddresses } from "~/utils";
 import { ICVCMToken, ICVCMGovernor } from "../typechain";
 
 export const deployContracts = async (): Promise<
@@ -19,6 +20,11 @@ export const deployContracts = async (): Promise<
   await ICVCMGovernor.deployed();
 
   console.log("ICVCMGovernor deployed to:", ICVCMGovernor.address);
+
+  await writeContractAddresses({
+    ICVCMGovernor: ICVCMGovernor.address,
+    ICVCMToken: ICVCMToken.address,
+  });
 
   return [ICVCMToken, ICVCMGovernor];
 };
