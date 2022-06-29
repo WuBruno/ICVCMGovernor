@@ -7,6 +7,7 @@
     "types": "yarn hardhat typechain",
     "deploy": "yarn hardhat run --network localhost scripts/deploy.ts",
     "deploy:mint": "yarn hardhat run --network localhost scripts/deploy_and_mint.ts",
+    "deploy:goerli": "yarn hardhat run --network goerli scripts/deploy.ts",
     "console": "yarn hardhat console"
   },
   "devDependencies": {
