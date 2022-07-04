@@ -1,30 +1,24 @@
 import { ethers } from "hardhat";
-import { writeContractAddresses } from "~/utils";
 import { ICVCMToken, ICVCMGovernor } from "../typechain";
+
+export const deployICVCMToken = async () => {
+  const contractFactory = await ethers.getContractFactory("ICVCMToken");
+  const contract = await contractFactory.deploy();
+  return contract.deployed();
+};
+
+export const deployICVCMGovernor = async (tokenAddress: string) => {
+  const contractFactory = await ethers.getContractFactory("ICVCMGovernor");
+  const contract = await contractFactory.deploy(tokenAddress);
+  return contract.deployed();
+};
 
 export const deployContracts = async (): Promise<
   [ICVCMToken, ICVCMGovernor]
 > => {
   // Deploy ICVCMToken
-  const ICVCMTokenContract = await ethers.getContractFactory("ICVCMToken");
-  const ICVCMToken = await ICVCMTokenContract.deploy();
-  await ICVCMToken.deployed();
+  const token: ICVCMToken = await deployICVCMToken();
+  const governor: ICVCMGovernor = await deployICVCMGovernor(token.address);
 
-  console.log("ICVCMToken deployed to:", ICVCMToken.address);
-
-  // Deploy Governor
-  const ICVCMGovernorContract = await ethers.getContractFactory(
-    "ICVCMGovernor"
-  );
-  const ICVCMGovernor = await ICVCMGovernorContract.deploy(ICVCMToken.address);
-  await ICVCMGovernor.deployed();
-
-  console.log("ICVCMGovernor deployed to:", ICVCMGovernor.address);
-
-  await writeContractAddresses({
-    ICVCMGovernor: ICVCMGovernor.address,
-    ICVCMToken: ICVCMToken.address,
-  });
-
-  return [ICVCMToken, ICVCMGovernor];
+  return [token, governor];
 };
