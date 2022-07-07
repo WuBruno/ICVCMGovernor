@@ -6,9 +6,10 @@
     "mint:tokens": "yarn hardhat mint_tokens",
     "migrate": "cp -r ./abi/ ../icvcm_website/contracts && cp ./contract.json ../icvcm_website/",
     "test": "yarn hardhat test",
-    "types": "yarn hardhat typechain",
+    "test:types": "yarn types && yarn hardhat test",
+    "types": "rm -r ./typechain && yarn hardhat typechain",
     "deploy": "yarn hardhat run --network localhost scripts/deploy.ts",
-    "deploy:mint": "yarn hardhat run --network localhost scripts/deploy_and_mint.ts",
+    "deploy:mint": "yarn hardhat run --network localhost scripts/deploy_and_mint.ts && yarn migrate",
     "deploy:goerli": "yarn hardhat run --network goerli scripts/deploy.ts",
     "console": "yarn hardhat console",
     "lint": "yarn eslint '**/*.{js,ts}' --fix && yarn prettier '**/*.{json,sol,md}' --write && yarn solhint 'contracts/**/*.sol' --fix"

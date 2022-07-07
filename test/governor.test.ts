@@ -2,61 +2,35 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { BigNumberish } from "ethers";
 import { ethers } from "hardhat";
+import { Roles } from "~/@types";
 import { deployContracts } from "~/services/deployment";
-import { ICVCMGovernor, ICVCMToken } from "~/typechain";
+import { ICVCMGovernor, ICVCMRoles, ICVCMToken } from "~/typechain";
 import { moveBlocks } from "~/utils";
-
-const createProposal = async (
-  governorToken: ICVCMToken,
-  governor: ICVCMGovernor,
-  callerAddress: string
-): Promise<BigNumberish> => {
-  const encodedFunctionCall = governorToken.interface.encodeFunctionData(
-    "safeMint",
-    [callerAddress]
-  );
-
-  const proposalTx = await governor.propose(
-    [governorToken.address],
-    [0],
-    [encodedFunctionCall],
-    "Test Proposal"
-  );
-  const proposalReceipt = await proposalTx.wait(1);
-  return proposalReceipt.events![0].args!.proposalId;
-};
-
-const voteProposal = async (
-  governor: ICVCMGovernor,
-  proposalId: BigNumberish,
-  support = 1
-) => {
-  const voteTx = await governor.castVoteWithReason(
-    proposalId,
-    support,
-    "Great example proposal"
-  );
-  return voteTx.wait(1);
-};
+import { createProposal, voteProposal } from "./helper";
 
 describe("Governor Contract", async () => {
   let governor: ICVCMGovernor;
   let governorToken: ICVCMToken;
+  let roles: ICVCMRoles;
   let owner: SignerWithAddress;
   let user2: SignerWithAddress;
   let proposalId: BigNumberish;
 
   beforeEach(async () => {
-    // Deploy ICVCMTokenContract
-    [governorToken, governor] = await deployContracts();
+    [governorToken, governor, roles] = await deployContracts();
 
     [owner, user2] = await ethers.getSigners();
 
-    await governorToken.safeMint(owner.address);
-    await governorToken.delegate(owner.address);
-
-    await governorToken.safeMint(user2.address);
-    await governorToken.delegate(user2.address);
+    await roles.addMember(
+      owner.address,
+      Roles.Director,
+      ethers.utils.formatBytes32String("director1")
+    );
+    await roles.addMember(
+      user2.address,
+      Roles.Director,
+      ethers.utils.formatBytes32String("director2")
+    );
 
     proposalId = await createProposal(governorToken, governor, owner.address);
     await moveBlocks(1);
