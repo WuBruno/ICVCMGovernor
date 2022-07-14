@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
+import "./ICVCMConstitution.sol";
 
 contract ICVCMGovernor is
     Governor,
@@ -14,7 +15,9 @@ contract ICVCMGovernor is
     GovernorVotes,
     GovernorVotesQuorumFraction
 {
-    constructor(IVotes _token)
+    ICVCMConstitution private constitution;
+
+    constructor(IVotes _token, ICVCMConstitution _constitution)
         Governor("ICVCMGovernor")
         GovernorSettings(
             0, /* 0 block */
@@ -23,7 +26,9 @@ contract ICVCMGovernor is
         )
         GovernorVotes(_token)
         GovernorVotesQuorumFraction(4)
-    {} /* solhint-disable no-empty-blocks*/
+    {
+        constitution = _constitution;
+    }
 
     // The following functions are overrides required by Solidity.
 

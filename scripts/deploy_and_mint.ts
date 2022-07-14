@@ -6,6 +6,7 @@
 import hre, { ethers } from "hardhat";
 import { Roles } from "~/@types";
 import { deployContracts } from "~/services/deployment";
+import { addMember } from "~/test/helper";
 import { writeContractAddresses } from "~/utils";
 
 async function main() {
@@ -29,13 +30,14 @@ async function main() {
 
   // Mint Tokens
   const accounts = await ethers.getSigners();
-  for (const account of accounts) {
-    await ICVCMRoles.addMember(
+  await accounts.forEach(async (account, index) =>
+    addMember(
+      ICVCMRoles,
       account.address,
       Roles.Director,
-      `Director ${account.address}`
-    );
-  }
+      `Director${index + 1}`
+    )
+  );
 
   console.log("Account minted a token");
 }
