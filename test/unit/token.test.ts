@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import { Roles } from "~/@types";
 import { deployContracts } from "~/services/deployment";
 import { ICVCMRoles, ICVCMToken } from "~/typechain";
-import { addMember } from "./helper";
+import { addMember } from "../helper";
 
 describe("Token Contract", async () => {
   let governorToken: ICVCMToken;

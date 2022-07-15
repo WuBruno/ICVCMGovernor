@@ -6,7 +6,7 @@ import { Roles } from "~/@types";
 import { deployContracts } from "~/services/deployment";
 import { ICVCMGovernor, ICVCMRoles, ICVCMToken } from "~/typechain";
 import { moveBlocks } from "~/utils";
-import { createProposal, voteProposal } from "./helper";
+import { createProposal, voteProposal } from "../helper";
 
 describe("Governor Contract", async () => {
   let governor: ICVCMGovernor;

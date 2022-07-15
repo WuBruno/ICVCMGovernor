@@ -1,6 +1,60 @@
 import { ICVCMGovernor, ICVCMRoles, ICVCMToken } from "~/typechain";
 import { BigNumberish, ethers } from "ethers";
 import { Roles } from "~/@types";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { moveBlocks } from "~/utils";
+
+export const createAndPassProposal = async (
+  governorToken: ICVCMToken,
+  governor: ICVCMGovernor,
+  executionAddress: string,
+  encodedFunctionCall: string,
+  description: string,
+  voters: SignerWithAddress[]
+) => {
+  const proposalId = await createCustomProposal(
+    governorToken,
+    governor,
+    executionAddress,
+    encodedFunctionCall,
+    description
+  );
+
+  await voters.forEach(async (voter) =>
+    voteProposal(governor.connect(voter), proposalId)
+  );
+
+  await moveBlocks(300);
+
+  const descriptionHash = ethers.utils.id(description);
+  const executionTx = await governor.execute(
+    [executionAddress],
+    [0],
+    [encodedFunctionCall],
+    descriptionHash
+  );
+  await executionTx.wait();
+
+  return proposalId;
+};
+
+export const createCustomProposal = async (
+  governorToken: ICVCMToken,
+  governor: ICVCMGovernor,
+  executionAddress: string,
+  encodedFunctionCall: string,
+  description: string = "Custom Proposal"
+) => {
+  const proposalTx = await governor.propose(
+    [executionAddress],
+    [0],
+    [encodedFunctionCall],
+    description
+  );
+
+  const proposalReceipt = await proposalTx.wait(1);
+  return proposalReceipt.events![0].args!.proposalId;
+};
 
 export const createProposal = async (
   governorToken: ICVCMToken,

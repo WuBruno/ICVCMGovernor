@@ -27,6 +27,16 @@ contract ICVCMRoles is Ownable {
         token = tokenAddress;
     }
 
+    function removeMember(address memberAddress) public onlyOwner {
+        if (addressToMember[memberAddress].role == Role.Director) {
+            uint256 tokenId = token.tokenOfOwnerByIndex(memberAddress, 0);
+            token.burn(tokenId);
+        }
+
+        memberSet.remove(memberAddress);
+        delete addressToMember[memberAddress];
+    }
+
     function addMember(
         address memberAddress,
         Role role,
@@ -55,6 +65,7 @@ contract ICVCMRoles is Ownable {
         view
         returns (Member memory)
     {
+        require(memberSet.contains(memberAddress), "Member not found");
         return addressToMember[memberAddress];
     }
 }

@@ -50,6 +50,7 @@ export const deployContracts = async (): Promise<
   // Assign token contract ownership to roles contract
   await token.transferOwnership(roles.address);
   await constitution.transferOwnership(governor.address);
+  // await roles.transferOwnership(governor.address);
 
   return [token, governor, roles, constitution];
 };
