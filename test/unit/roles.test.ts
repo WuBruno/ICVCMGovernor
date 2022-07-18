@@ -14,12 +14,9 @@ describe("Roles Contract", async () => {
   const name = "Alice";
 
   beforeEach(async () => {
-    // Deploy ICVCMTokenContract
-    [token, , roles] = await deployContracts();
-
     [user] = await ethers.getSigners();
 
-    // Add user
+    [token, , roles] = await deployContracts(undefined, false);
     await addMember(roles, user.address, role, name);
   });
 

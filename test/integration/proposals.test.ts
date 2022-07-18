@@ -9,7 +9,7 @@ import {
   ICVCMRoles,
   ICVCMToken,
 } from "~/typechain";
-import { createAndPassProposal } from "../helper";
+import { addMember, createAndPassProposal } from "../helper";
 import { mine } from "@nomicfoundation/hardhat-network-helpers";
 
 describe("Proposal Integration Tests", async () => {
@@ -22,19 +22,13 @@ describe("Proposal Integration Tests", async () => {
   let user3: SignerWithAddress;
 
   beforeEach(async () => {
-    [token, governor, roles, constitution] = await deployContracts();
-
     [owner, user2, user3] = await ethers.getSigners();
 
-    await roles.addMember(
-      owner.address,
-      Roles.Director,
-      ethers.utils.formatBytes32String("director1")
-    );
-    await roles.addMember(
-      user2.address,
-      Roles.Director,
-      ethers.utils.formatBytes32String("director2")
+    [token, governor, roles, constitution] = await deployContracts(
+      async (_roles) => {
+        await addMember(_roles, owner.address, Roles.Director, "director1");
+        await addMember(_roles, user2.address, Roles.Director, "director2");
+      }
     );
 
     await mine(1);
@@ -82,8 +76,6 @@ describe("Proposal Integration Tests", async () => {
     });
 
     it("should pass adding member proposal", async () => {
-      await roles.transferOwnership(governor.address);
-
       const description = "Adding new member";
       const name = ethers.utils.formatBytes32String("Director");
       const addMemberCall = roles.interface.encodeFunctionData("addMember", [

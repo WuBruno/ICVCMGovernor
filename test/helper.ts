@@ -1,9 +1,21 @@
 import { ICVCMGovernor, ICVCMRoles, ICVCMToken } from "~/typechain";
-import { BigNumberish, ethers, providers } from "ethers";
+import { BigNumberish, ethers } from "ethers";
 import { Roles } from "~/@types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { mine } from "@nomicfoundation/hardhat-network-helpers";
-import { moveBlocks } from "~/utils";
+
+export const addMember = async (
+  roles: ICVCMRoles,
+  memberAddress: string,
+  role: Roles,
+  name: string
+) => {
+  return roles.addMember(
+    memberAddress,
+    role,
+    ethers.utils.formatBytes32String(name)
+  );
+};
 
 export const createAndPassProposal = async (
   governorToken: ICVCMToken,
@@ -88,17 +100,4 @@ export const voteProposal = async (
     "Great example proposal"
   );
   return voteTx.wait(1);
-};
-
-export const addMember = async (
-  roles: ICVCMRoles,
-  memberAddress: string,
-  role: Roles,
-  name: string
-) => {
-  return roles.addMember(
-    memberAddress,
-    role,
-    ethers.utils.formatBytes32String(name)
-  );
 };

@@ -36,9 +36,10 @@ export const deployICVCMConstitution = async () => {
   return contract.deployed();
 };
 
-export async function deployContracts(): Promise<
-  [ICVCMToken, ICVCMGovernor, ICVCMRoles, ICVCMConstitution]
-> {
+export async function deployContracts(
+  preRoleOwnershipTransfer?: (roles: ICVCMRoles) => Promise<any>,
+  enableRoleOwnershipTransfer = true
+): Promise<[ICVCMToken, ICVCMGovernor, ICVCMRoles, ICVCMConstitution]> {
   const token: ICVCMToken = await deployICVCMToken();
   const constitution: ICVCMConstitution = await deployICVCMConstitution();
   const governor: ICVCMGovernor = await deployICVCMGovernor(
@@ -50,7 +51,10 @@ export async function deployContracts(): Promise<
   // Assign token contract ownership to roles contract
   await token.transferOwnership(roles.address);
   await constitution.transferOwnership(governor.address);
-  // await roles.transferOwnership(governor.address);
+
+  preRoleOwnershipTransfer && (await preRoleOwnershipTransfer(roles));
+  enableRoleOwnershipTransfer &&
+    (await roles.transferOwnership(governor.address));
 
   return [token, governor, roles, constitution];
 }

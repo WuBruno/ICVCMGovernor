@@ -13,7 +13,7 @@ describe("Token Contract", async () => {
   let user2: SignerWithAddress;
 
   beforeEach(async () => {
-    [governorToken, , roles] = await deployContracts();
+    [governorToken, , roles] = await deployContracts(undefined, false);
     [user, user2] = await ethers.getSigners();
   });
 
