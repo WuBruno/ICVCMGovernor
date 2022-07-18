@@ -36,9 +36,9 @@ export const deployICVCMConstitution = async () => {
   return contract.deployed();
 };
 
-export const deployContracts = async (): Promise<
+export async function deployContracts(): Promise<
   [ICVCMToken, ICVCMGovernor, ICVCMRoles, ICVCMConstitution]
-> => {
+> {
   const token: ICVCMToken = await deployICVCMToken();
   const constitution: ICVCMConstitution = await deployICVCMConstitution();
   const governor: ICVCMGovernor = await deployICVCMGovernor(
@@ -53,4 +53,4 @@ export const deployContracts = async (): Promise<
   // await roles.transferOwnership(governor.address);
 
   return [token, governor, roles, constitution];
-};
+}

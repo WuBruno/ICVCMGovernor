@@ -1,7 +1,8 @@
 import { ICVCMGovernor, ICVCMRoles, ICVCMToken } from "~/typechain";
-import { BigNumberish, ethers } from "ethers";
+import { BigNumberish, ethers, providers } from "ethers";
 import { Roles } from "~/@types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { mine } from "@nomicfoundation/hardhat-network-helpers";
 import { moveBlocks } from "~/utils";
 
 export const createAndPassProposal = async (
@@ -20,11 +21,11 @@ export const createAndPassProposal = async (
     description
   );
 
-  await voters.forEach(async (voter) =>
-    voteProposal(governor.connect(voter), proposalId)
-  );
+  for (const voter of voters) {
+    await voteProposal(governor.connect(voter), proposalId);
+  }
 
-  await moveBlocks(300);
+  await mine(300);
 
   const descriptionHash = ethers.utils.id(description);
   const executionTx = await governor.execute(

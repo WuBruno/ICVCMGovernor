@@ -1,17 +1,12 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { ethers } from "hardhat";
 import { deployICVCMConstitution } from "~/services/deployment";
 import { ICVCMConstitution } from "~/typechain";
 
 describe("Constitution Contract", async () => {
-  let user: SignerWithAddress;
   let constitution: ICVCMConstitution;
 
   beforeEach(async () => {
     constitution = await deployICVCMConstitution();
-
-    [user] = await ethers.getSigners();
   });
 
   it("should set principle", async () => {

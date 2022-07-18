@@ -9,12 +9,12 @@ import {
   ICVCMRoles,
   ICVCMToken,
 } from "~/typechain";
-import { moveBlocks } from "~/utils";
 import { createAndPassProposal } from "../helper";
+import { mine } from "@nomicfoundation/hardhat-network-helpers";
 
 describe("Proposal Integration Tests", async () => {
   let governor: ICVCMGovernor;
-  let governorToken: ICVCMToken;
+  let token: ICVCMToken;
   let constitution: ICVCMConstitution;
   let roles: ICVCMRoles;
   let owner: SignerWithAddress;
@@ -22,7 +22,7 @@ describe("Proposal Integration Tests", async () => {
   let user3: SignerWithAddress;
 
   beforeEach(async () => {
-    [governorToken, governor, roles, constitution] = await deployContracts();
+    [token, governor, roles, constitution] = await deployContracts();
 
     [owner, user2, user3] = await ethers.getSigners();
 
@@ -37,7 +37,7 @@ describe("Proposal Integration Tests", async () => {
       ethers.utils.formatBytes32String("director2")
     );
 
-    await moveBlocks(1);
+    await mine(1);
   });
 
   describe("Passing Types of Proposals", () => {
@@ -50,7 +50,7 @@ describe("Proposal Integration Tests", async () => {
       const description = "New strategy proposal";
 
       await createAndPassProposal(
-        governorToken,
+        token,
         governor,
         constitution.address,
         setProposalCall,
@@ -70,7 +70,7 @@ describe("Proposal Integration Tests", async () => {
       const description = "New principle proposal";
 
       await createAndPassProposal(
-        governorToken,
+        token,
         governor,
         constitution.address,
         setPrincipleCall,
@@ -82,7 +82,7 @@ describe("Proposal Integration Tests", async () => {
     });
 
     it("should pass adding member proposal", async () => {
-      // await roles.transferOwnership(governor.address);
+      await roles.transferOwnership(governor.address);
 
       const description = "Adding new member";
       const name = ethers.utils.formatBytes32String("Director");
@@ -93,7 +93,7 @@ describe("Proposal Integration Tests", async () => {
       ]);
 
       await createAndPassProposal(
-        governorToken,
+        token,
         governor,
         roles.address,
         addMemberCall,

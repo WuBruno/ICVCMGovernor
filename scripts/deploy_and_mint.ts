@@ -30,14 +30,14 @@ async function main() {
 
   // Mint Tokens
   const accounts = await ethers.getSigners();
-  await accounts.forEach(async (account, index) =>
-    addMember(
+  for (const [index, account] of accounts.entries()) {
+    await addMember(
       ICVCMRoles,
       account.address,
       Roles.Director,
       `Director${index + 1}`
-    )
-  );
+    );
+  }
 
   console.log("Account minted a token");
 }
