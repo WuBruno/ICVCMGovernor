@@ -15,14 +15,19 @@ async function main() {
   // manually to make sure everything is compiled
   await hre.run("compile");
 
-  const [ICVCMToken, ICVCMGovernor] = await deployContracts();
+  const [ICVCMToken, ICVCMGovernor, ICVCMRoles, ICVCMConstitution] =
+    await deployContracts();
   console.log("ICVCMToken deployed to:", ICVCMToken.address);
   console.log("ICVCMGovernor deployed to:", ICVCMGovernor.address);
+  console.log("ICVCMRoles deployed to:", ICVCMRoles.address);
+  console.log("ICVCMConstitution deployed to:", ICVCMConstitution.address);
 
   // Write addresses
   await writeContractAddresses({
     ICVCMGovernor: ICVCMGovernor.address,
     ICVCMToken: ICVCMToken.address,
+    ICVCMRoles: ICVCMRoles.address,
+    ICVCMConstitution: ICVCMConstitution.address,
   });
 }
 

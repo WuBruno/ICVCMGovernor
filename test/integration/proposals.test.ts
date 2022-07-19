@@ -41,6 +41,7 @@ describe("Proposal Integration Tests", async () => {
         "setStrategies",
         [newStrategy]
       );
+
       const description = "New strategy proposal";
 
       await createAndPassProposal(
@@ -56,11 +57,12 @@ describe("Proposal Integration Tests", async () => {
     });
 
     it("should pass a principle proposal", async () => {
-      const newPrinciple = "The best principle";
+      const newPrinciple = "The best principle 2";
       const setPrincipleCall = constitution.interface.encodeFunctionData(
         "setPrinciples",
         [newPrinciple]
       );
+
       const description = "New principle proposal";
 
       await createAndPassProposal(
@@ -75,8 +77,8 @@ describe("Proposal Integration Tests", async () => {
       expect(await constitution.getPrinciples()).equal(newPrinciple);
     });
 
-    it("should pass adding member proposal", async () => {
-      const description = "Adding new member";
+    it("should pass adding director proposal", async () => {
+      const description = "Adding new director";
       const name = ethers.utils.formatBytes32String("Director");
       const addMemberCall = roles.interface.encodeFunctionData("addMember", [
         user3.address,
@@ -93,7 +95,42 @@ describe("Proposal Integration Tests", async () => {
         [owner, user2]
       );
 
-      expect((await roles.getMember(user3.address)).name).to.equal(name);
+      expect(
+        (await roles.getMember(user3.address)).name,
+        "Should find the name of the director once passed"
+      ).to.equal(name);
+      expect(
+        await token.getVotes(user3.address),
+        "Voting power should be 1 after adding proposal passes"
+      ).to.equal(1);
+    });
+
+    it("should reject proposal when adding the member to the same role");
+
+    it("should pass remove member proposal", async () => {
+      const description = "Remove director";
+      const removeMemberCall = roles.interface.encodeFunctionData(
+        "removeMember",
+        [user2.address]
+      );
+
+      await createAndPassProposal(
+        token,
+        governor,
+        roles.address,
+        removeMemberCall,
+        description,
+        [owner, user2]
+      );
+
+      expect(
+        roles.getMember(user2.address),
+        "Should not find the member once removed"
+      ).to.revertedWith("Member not found");
+      expect(
+        await token.getVotes(user2.address),
+        "Member's voting power should be 0 once removed"
+      ).to.equal(0);
     });
   });
 });

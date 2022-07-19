@@ -17,27 +17,33 @@ async function main() {
   // manually to make sure everything is compiled
   await hre.run("compile");
 
-  const [ICVCMToken, ICVCMGovernor, ICVCMRoles] = await deployContracts();
+  const accounts = await ethers.getSigners();
+
+  const [ICVCMToken, ICVCMGovernor, ICVCMRoles, ICVCMConstitution] =
+    await deployContracts(async (roles) => {
+      // Mint Tokens -- only set first 2 as directors
+      for (const [index, account] of accounts.slice(0, 2).entries()) {
+        await addMember(
+          roles,
+          account.address,
+          Roles.Director,
+          `Director${index + 1}`
+        );
+      }
+    });
+
   console.log("ICVCMToken deployed to:", ICVCMToken.address);
   console.log("ICVCMGovernor deployed to:", ICVCMGovernor.address);
+  console.log("ICVCMRoles deployed to:", ICVCMRoles.address);
+  console.log("ICVCMConstitution deployed to:", ICVCMConstitution.address);
 
   // Write addresses
   await writeContractAddresses({
     ICVCMGovernor: ICVCMGovernor.address,
     ICVCMToken: ICVCMToken.address,
     ICVCMRoles: ICVCMRoles.address,
+    ICVCMConstitution: ICVCMConstitution.address,
   });
-
-  // Mint Tokens
-  const accounts = await ethers.getSigners();
-  for (const [index, account] of accounts.entries()) {
-    await addMember(
-      ICVCMRoles,
-      account.address,
-      Roles.Director,
-      `Director${index + 1}`
-    );
-  }
 
   console.log("Account minted a token");
 }
