@@ -16,6 +16,12 @@ struct Member {
     bytes32 name;
 }
 
+struct MemberOutput {
+    Role role;
+    bytes32 name;
+    address memberAddress;
+}
+
 contract ICVCMRoles is Ownable {
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -67,5 +73,17 @@ contract ICVCMRoles is Ownable {
     {
         require(memberSet.contains(memberAddress), "Member not found");
         return addressToMember[memberAddress];
+    }
+
+    function getMembers() public view returns (MemberOutput[] memory) {
+        uint256 memberCount = memberSet.length();
+        MemberOutput[] memory members = new MemberOutput[](memberCount);
+        for (uint256 i = 0; i < memberCount; i++) {
+            address memberAddress = memberSet.at(i);
+            Member memory member = addressToMember[memberAddress];
+            members[i] = MemberOutput(member.role, member.name, memberAddress);
+        }
+
+        return members;
     }
 }

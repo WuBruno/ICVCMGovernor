@@ -11,6 +11,7 @@
     "deploy": "yarn hardhat run --network localhost scripts/deploy.ts",
     "deploy:mint": "yarn hardhat run --network localhost scripts/deploy_and_mint.ts && yarn migrate",
     "deploy:goerli": "yarn hardhat run --network goerli scripts/deploy.ts",
+    "mine": "yarn hardhat mine --network localhost",
     "console": "yarn hardhat console",
     "lint": "yarn eslint '**/*.{js,ts}' --fix && yarn prettier '**/*.{json,sol,md}' --write && yarn solhint 'contracts/**/*.sol' --fix"
   },

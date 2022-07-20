@@ -40,4 +40,11 @@ describe("Roles Contract", async () => {
 
     expect(await token.balanceOf(user.address)).to.equal(0);
   });
+
+  it("should get an array of members", async () => {
+    const members = await roles.getMembers();
+    expect(ethers.utils.parseBytes32String(members[0].name)).to.equal(name);
+    expect(members[0].role).to.equal(role);
+    expect(members[0].memberAddress).to.equal(user.address);
+  });
 });
