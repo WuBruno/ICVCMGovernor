@@ -30,6 +30,12 @@ async function main() {
           `Director${index + 1}`
         );
       }
+      await addMember(
+        roles,
+        accounts[2].address,
+        Roles.Regulator,
+        "Regulator1"
+      );
     });
 
   console.log("ICVCMToken deployed to:", ICVCMToken.address);

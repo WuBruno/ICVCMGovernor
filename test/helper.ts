@@ -1,8 +1,8 @@
-import { ICVCMGovernor, ICVCMRoles, ICVCMToken } from "~/typechain";
+import { mine } from "@nomicfoundation/hardhat-network-helpers";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumberish, ethers } from "ethers";
 import { Roles } from "~/@types";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { mine } from "@nomicfoundation/hardhat-network-helpers";
+import { ICVCMGovernor, ICVCMRoles } from "~/typechain";
 
 export const addMember = async (
   roles: ICVCMRoles,
@@ -18,15 +18,14 @@ export const addMember = async (
 };
 
 export const createAndPassProposal = async (
-  governorToken: ICVCMToken,
   governor: ICVCMGovernor,
   executionAddress: string,
   encodedFunctionCall: string,
   description: string,
-  voters: SignerWithAddress[]
+  voters: SignerWithAddress[],
+  regulator: SignerWithAddress
 ) => {
-  const proposalId = await createCustomProposal(
-    governorToken,
+  const proposalId = await createProposal(
     governor,
     executionAddress,
     encodedFunctionCall,
@@ -39,24 +38,22 @@ export const createAndPassProposal = async (
 
   await mine(300);
 
-  const descriptionHash = ethers.utils.id(description);
-  const executionTx = await governor.execute(
-    [executionAddress],
-    [0],
-    [encodedFunctionCall],
-    descriptionHash
+  await executeProposal(
+    governor,
+    executionAddress,
+    encodedFunctionCall,
+    description,
+    regulator
   );
-  await executionTx.wait();
 
   return proposalId;
 };
 
-export const createCustomProposal = async (
-  governorToken: ICVCMToken,
+export const createProposal = async (
   governor: ICVCMGovernor,
   executionAddress: string,
   encodedFunctionCall: string,
-  description: string = "Custom Proposal"
+  description: string
 ) => {
   const proposalTx = await governor.propose(
     [executionAddress],
@@ -69,24 +66,32 @@ export const createCustomProposal = async (
   return proposalReceipt.events![0].args!.proposalId;
 };
 
-export const createProposal = async (
-  governorToken: ICVCMToken,
+export const executeProposal = async (
   governor: ICVCMGovernor,
-  callerAddress: string
-): Promise<BigNumberish> => {
-  const encodedFunctionCall = governorToken.interface.encodeFunctionData(
-    "safeMint",
-    [callerAddress]
-  );
+  executionAddress: string,
+  encodedFunctionCall: string,
+  description: string,
+  executor: SignerWithAddress
+) => {
+  const descriptionHash = ethers.utils.id(description);
+  const executionTx = await governor
+    .connect(executor)
+    .execute([executionAddress], [0], [encodedFunctionCall], descriptionHash);
+  return executionTx.wait();
+};
 
-  const proposalTx = await governor.propose(
-    [governorToken.address],
-    [0],
-    [encodedFunctionCall],
-    "Test Proposal"
-  );
-  const proposalReceipt = await proposalTx.wait(1);
-  return proposalReceipt.events![0].args!.proposalId;
+export const cancelProposal = async (
+  governor: ICVCMGovernor,
+  executionAddress: string,
+  encodedFunctionCall: string,
+  description: string,
+  executor: SignerWithAddress
+) => {
+  const descriptionHash = ethers.utils.id(description);
+  const executionTx = await governor
+    .connect(executor)
+    .cancel([executionAddress], [0], [encodedFunctionCall], descriptionHash);
+  return executionTx.wait();
 };
 
 export const voteProposal = async (

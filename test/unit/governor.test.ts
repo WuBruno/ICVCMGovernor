@@ -3,30 +3,49 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { BigNumberish } from "ethers";
 import { ethers } from "hardhat";
-import { Roles } from "~/@types";
+import { ProposalState, Roles } from "~/@types";
 import { deployContracts } from "~/services/deployment";
-import { ICVCMGovernor, ICVCMToken } from "~/typechain";
-import { addMember, createProposal, voteProposal } from "../helper";
+import { ICVCMConstitution, ICVCMGovernor } from "~/typechain";
+import {
+  addMember,
+  cancelProposal,
+  createProposal,
+  executeProposal,
+  voteProposal,
+} from "../helper";
 
 describe("Governor Contract", async () => {
   let governor: ICVCMGovernor;
-  let governorToken: ICVCMToken;
-  let users: SignerWithAddress[];
+  let constitution: ICVCMConstitution;
+  let director1: SignerWithAddress;
+  let director2: SignerWithAddress;
+  let regulator: SignerWithAddress;
+
+  // Proposal credentials
   let proposalId: BigNumberish;
+  let encodedFunctionCall: string;
+  const proposalDescription = "Test Proposal";
 
   beforeEach(async () => {
-    users = await ethers.getSigners();
+    [director1, director2, regulator] = await ethers.getSigners();
 
-    [governorToken, governor] = await deployContracts(async (_roles) => {
-      await addMember(_roles, users[0].address, Roles.Director, "director1");
-      await addMember(_roles, users[1].address, Roles.Director, "director2");
+    [, governor, , constitution] = await deployContracts(async (_roles) => {
+      await addMember(_roles, director1.address, Roles.Director, "director1");
+      await addMember(_roles, director2.address, Roles.Director, "director2");
+      await addMember(_roles, regulator.address, Roles.Regulator, "regulator");
     });
 
-    proposalId = await createProposal(
-      governorToken,
-      governor,
-      users[0].address
+    encodedFunctionCall = constitution.interface.encodeFunctionData(
+      "setPrinciples",
+      ["hello world"]
     );
+    proposalId = await createProposal(
+      governor,
+      constitution.address,
+      encodedFunctionCall,
+      proposalDescription
+    );
+
     await mine(1);
   });
 
@@ -39,14 +58,14 @@ describe("Governor Contract", async () => {
   describe("Vote on Proposals", () => {
     it("should vote for the proposal", async () => {
       await voteProposal(governor, proposalId);
-      expect(await governor.hasVoted(proposalId, users[0].address)).to.equal(
+      expect(await governor.hasVoted(proposalId, director1.address)).to.equal(
         true
       );
     });
 
     it("should vote against the proposal", async () => {
       await voteProposal(governor, proposalId, 0);
-      expect(await governor.hasVoted(proposalId, users[0].address)).to.equal(
+      expect(await governor.hasVoted(proposalId, director1.address)).to.equal(
         true
       );
     });
@@ -55,26 +74,97 @@ describe("Governor Contract", async () => {
   describe("Proposals Outcomes", () => {
     it("should vote for and succeed proposal", async () => {
       await voteProposal(governor, proposalId);
-      await voteProposal(governor.connect(users[1]), proposalId);
+      await voteProposal(governor.connect(director2), proposalId);
 
       await mine(300);
 
       expect(
         await governor.state(proposalId),
         "Proposal not succeeded"
-      ).to.equal(4);
+      ).to.equal(ProposalState.Succeeded);
     });
 
     it("should vote against proposal and defeat", async () => {
       await voteProposal(governor, proposalId, 0);
-      await voteProposal(governor.connect(users[1]), proposalId, 0);
+      await voteProposal(governor.connect(director2), proposalId, 0);
 
       await mine(300);
 
       expect(
         await governor.state(proposalId),
         "Proposal not defeated"
-      ).to.equal(3);
+      ).to.equal(ProposalState.Defeated);
+    });
+  });
+
+  describe("Regulators Decision", () => {
+    it("should succeed when regulator executes", async () => {
+      await voteProposal(governor, proposalId);
+      await voteProposal(governor.connect(director2), proposalId);
+      await mine(300);
+
+      await executeProposal(
+        governor,
+        constitution.address,
+        encodedFunctionCall,
+        proposalDescription,
+        regulator
+      );
+
+      expect(
+        await governor.state(proposalId),
+        "Proposal not executed"
+      ).to.equal(ProposalState.Executed);
+    });
+
+    it("should cancel when regulator cancels", async () => {
+      await cancelProposal(
+        governor,
+        constitution.address,
+        encodedFunctionCall,
+        proposalDescription,
+        regulator
+      );
+
+      expect(
+        await governor.state(proposalId),
+        "Proposal not cancelled"
+      ).to.equal(ProposalState.Canceled);
+    });
+
+    it("should fail execution by director", async () => {
+      await voteProposal(governor, proposalId);
+      await voteProposal(governor.connect(director2), proposalId);
+      await mine(300);
+
+      expect(
+        executeProposal(
+          governor,
+          constitution.address,
+          encodedFunctionCall,
+          proposalDescription,
+          director1
+        )
+      ).to.revertedWith("Execute restricted to Regulator");
+    });
+
+    it("should cancel after success on votes", async () => {
+      await voteProposal(governor, proposalId);
+      await voteProposal(governor.connect(director2), proposalId);
+      await mine(300);
+
+      await cancelProposal(
+        governor,
+        constitution.address,
+        encodedFunctionCall,
+        proposalDescription,
+        regulator
+      );
+
+      expect(
+        await governor.state(proposalId),
+        "Proposal not cancelled"
+      ).to.equal(ProposalState.Canceled);
     });
   });
 });

@@ -1,3 +1,4 @@
+import { mine } from "@nomicfoundation/hardhat-network-helpers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
@@ -10,7 +11,6 @@ import {
   ICVCMToken,
 } from "~/typechain";
 import { addMember, createAndPassProposal } from "../helper";
-import { mine } from "@nomicfoundation/hardhat-network-helpers";
 
 describe("Proposal Integration Tests", async () => {
   let governor: ICVCMGovernor;
@@ -20,14 +20,21 @@ describe("Proposal Integration Tests", async () => {
   let owner: SignerWithAddress;
   let user2: SignerWithAddress;
   let user3: SignerWithAddress;
+  let regulator: SignerWithAddress;
 
   beforeEach(async () => {
-    [owner, user2, user3] = await ethers.getSigners();
+    [owner, user2, user3, regulator] = await ethers.getSigners();
 
     [token, governor, roles, constitution] = await deployContracts(
       async (_roles) => {
         await addMember(_roles, owner.address, Roles.Director, "director1");
         await addMember(_roles, user2.address, Roles.Director, "director2");
+        await addMember(
+          _roles,
+          regulator.address,
+          Roles.Regulator,
+          "regulator1"
+        );
       }
     );
 
@@ -45,12 +52,12 @@ describe("Proposal Integration Tests", async () => {
       const description = "New strategy proposal";
 
       await createAndPassProposal(
-        token,
         governor,
         constitution.address,
         setProposalCall,
         description,
-        [owner, user2]
+        [owner, user2],
+        regulator
       );
 
       expect(await constitution.getStrategies()).equal(newStrategy);
@@ -66,12 +73,12 @@ describe("Proposal Integration Tests", async () => {
       const description = "New principle proposal";
 
       await createAndPassProposal(
-        token,
         governor,
         constitution.address,
         setPrincipleCall,
         description,
-        [owner, user2]
+        [owner, user2],
+        regulator
       );
 
       expect(await constitution.getPrinciples()).equal(newPrinciple);
@@ -87,12 +94,12 @@ describe("Proposal Integration Tests", async () => {
       ]);
 
       await createAndPassProposal(
-        token,
         governor,
         roles.address,
         addMemberCall,
         description,
-        [owner, user2]
+        [owner, user2],
+        regulator
       );
 
       expect(
@@ -115,12 +122,12 @@ describe("Proposal Integration Tests", async () => {
       );
 
       await createAndPassProposal(
-        token,
         governor,
         roles.address,
         removeMemberCall,
         description,
-        [owner, user2]
+        [owner, user2],
+        regulator
       );
 
       expect(

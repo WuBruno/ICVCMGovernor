@@ -1,9 +1,9 @@
 import { ethers } from "hardhat";
 import {
+  ICVCMConstitution,
+  ICVCMGovernor,
   ICVCMRoles,
   ICVCMToken,
-  ICVCMGovernor,
-  ICVCMConstitution,
 } from "~/typechain";
 
 export const deployICVCMToken = async () => {
@@ -14,12 +14,14 @@ export const deployICVCMToken = async () => {
 
 export const deployICVCMGovernor = async (
   tokenAddress: string,
-  constitutionAddress: string
+  constitutionAddress: string,
+  roleAddress: string
 ) => {
   const contractFactory = await ethers.getContractFactory("ICVCMGovernor");
   const contract = await contractFactory.deploy(
     tokenAddress,
-    constitutionAddress
+    constitutionAddress,
+    roleAddress
   );
   return contract.deployed();
 };
@@ -42,11 +44,12 @@ export async function deployContracts(
 ): Promise<[ICVCMToken, ICVCMGovernor, ICVCMRoles, ICVCMConstitution]> {
   const token: ICVCMToken = await deployICVCMToken();
   const constitution: ICVCMConstitution = await deployICVCMConstitution();
+  const roles: ICVCMRoles = await deployICVCMRoles(token.address);
   const governor: ICVCMGovernor = await deployICVCMGovernor(
     token.address,
-    constitution.address
+    constitution.address,
+    roles.address
   );
-  const roles: ICVCMRoles = await deployICVCMRoles(token.address);
 
   // Assign token contract ownership to roles contract
   await token.transferOwnership(roles.address);

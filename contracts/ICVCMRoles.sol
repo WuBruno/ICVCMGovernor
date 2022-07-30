@@ -8,7 +8,8 @@ import "./ICVCMToken.sol";
 enum Role {
     Director,
     Expert,
-    Secretariat
+    Secretariat,
+    Regulator
 }
 
 struct Member {
