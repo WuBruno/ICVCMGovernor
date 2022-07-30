@@ -4,7 +4,7 @@ coverage
 coverage.json
 typechain
 abi
-contract.json
+./contract.json
 
 #Hardhat files
 cache
