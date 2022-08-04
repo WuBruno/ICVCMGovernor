@@ -13,7 +13,8 @@
     "deploy:goerli": "yarn hardhat run --network goerli scripts/deploy.ts",
     "mine": "yarn hardhat mine --network localhost",
     "console": "yarn hardhat console",
-    "lint": "yarn eslint '**/*.{js,ts}' --fix && yarn prettier '**/*.{json,sol,md}' --write && yarn solhint 'contracts/**/*.sol' --fix"
+    "lint": "yarn eslint '**/*.{js,ts}' --fix && yarn prettier '**/*.{json,sol,md}' --write && yarn solhint 'contracts/**/*.sol' --fix",
+    "postinstall": "patch-package"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.2",
@@ -40,6 +41,7 @@
     "hardhat": "^2.9.9",
     "hardhat-abi-exporter": "^2.9.0",
     "hardhat-gas-reporter": "^1.0.4",
+    "patch-package": "^6.4.7",
     "prettier": "^2.3.2",
     "prettier-plugin-solidity": "^1.0.0-beta.13",
     "solhint": "^3.3.6",

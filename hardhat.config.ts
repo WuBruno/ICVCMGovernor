@@ -1,13 +1,13 @@
-import * as dotenv from "dotenv";
-import "tsconfig-paths/register";
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomiclabs/hardhat-etherscan";
-import "@nomiclabs/hardhat-ethers";
 import "@nomicfoundation/hardhat-chai-matchers";
+import "@nomiclabs/hardhat-ethers";
+import "@nomiclabs/hardhat-etherscan";
 import "@typechain/hardhat";
-import "hardhat-gas-reporter";
-import "solidity-coverage";
+import * as dotenv from "dotenv";
 import "hardhat-abi-exporter";
+import "hardhat-gas-reporter";
+import { HardhatUserConfig } from "hardhat/config";
+import "solidity-coverage";
+import "tsconfig-paths/register";
 
 import "~/tasks";
 
@@ -23,6 +23,7 @@ const config: HardhatUserConfig = {
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+    hardhat: {},
   },
   paths: {
     sources: "./contracts",

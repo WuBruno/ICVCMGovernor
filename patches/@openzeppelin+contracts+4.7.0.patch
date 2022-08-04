@@ -1,0 +1,13 @@
+diff --git a/node_modules/@openzeppelin/contracts/governance/IGovernor.sol b/node_modules/@openzeppelin/contracts/governance/IGovernor.sol
+index 8b21d29..de95476 100644
+--- a/node_modules/@openzeppelin/contracts/governance/IGovernor.sol
++++ b/node_modules/@openzeppelin/contracts/governance/IGovernor.sol
+@@ -52,7 +52,7 @@ abstract contract IGovernor is IERC165 {
+      *
+      * Note: `support` values should be seen as buckets. Their interpretation depends on the voting module used.
+      */
+-    event VoteCast(address indexed voter, uint256 proposalId, uint8 support, uint256 weight, string reason);
++    event VoteCast(address indexed voter, uint256 indexed proposalId, uint8 support, uint256 weight, string reason);
+ 
+     /**
+      * @dev Emitted when a vote is cast with params.
