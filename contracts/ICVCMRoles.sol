@@ -30,8 +30,49 @@ contract ICVCMRoles is Ownable {
     mapping(address => Member) private addressToMember;
     ICVCMToken private token;
 
+    // Contract Address => Function Selector => Role => Boolean
+    mapping(address => mapping(bytes4 => mapping(Role => bool)))
+        private proposalAuthorization;
+
     constructor(ICVCMToken tokenAddress) {
         token = tokenAddress;
+    }
+
+    event MemberAdded(address memberAddress, Role role, bytes32 name);
+
+    event MemberRemoved(address memberAddress, Role role, bytes32 name);
+
+    function hasProposalAuthorization(
+        address contractAddress,
+        bytes4 selector,
+        Role role
+    ) public view returns (bool) {
+        return proposalAuthorization[contractAddress][selector][role];
+    }
+
+    function _setProposalAuthorization(
+        address contractAddress,
+        bytes4 selector,
+        Role role,
+        bool allow
+    ) private {
+        proposalAuthorization[contractAddress][selector][role] = allow;
+    }
+
+    function setProposalAuthorization(
+        address[] memory contracts,
+        bytes4[] memory selectors,
+        Role[] memory roles,
+        bool[] memory allow
+    ) public onlyOwner {
+        for (uint256 i = 0; i < contracts.length; ++i) {
+            _setProposalAuthorization(
+                contracts[i],
+                selectors[i],
+                roles[i],
+                allow[i]
+            );
+        }
     }
 
     function removeMember(address memberAddress) public onlyOwner {
@@ -39,6 +80,12 @@ contract ICVCMRoles is Ownable {
             uint256 tokenId = token.tokenOfOwnerByIndex(memberAddress, 0);
             token.burn(tokenId);
         }
+
+        emit MemberRemoved(
+            memberAddress,
+            addressToMember[memberAddress].role,
+            addressToMember[memberAddress].name
+        );
 
         memberSet.remove(memberAddress);
         delete addressToMember[memberAddress];
@@ -53,6 +100,8 @@ contract ICVCMRoles is Ownable {
 
         Member memory member = Member(role, name);
         _addMemberData(memberAddress, member);
+
+        emit MemberAdded(memberAddress, role, name);
 
         // Mint token if Director
         if (role == Role.Director) {

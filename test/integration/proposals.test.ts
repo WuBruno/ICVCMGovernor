@@ -52,7 +52,7 @@ describe("Proposal Integration Tests", async () => {
       const description = "New strategy proposal";
 
       await createAndPassProposal(
-        governor,
+        governor.connect(owner),
         constitution.address,
         setProposalCall,
         description,
@@ -94,7 +94,7 @@ describe("Proposal Integration Tests", async () => {
       ]);
 
       await createAndPassProposal(
-        governor,
+        governor.connect(owner),
         roles.address,
         addMemberCall,
         description,

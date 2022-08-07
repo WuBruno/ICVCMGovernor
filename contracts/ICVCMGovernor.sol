@@ -6,8 +6,8 @@ import "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
-import "./ICVCMConstitution.sol";
 import "./ICVCMRoles.sol";
+import "hardhat/console.sol";
 
 contract ICVCMGovernor is
     Governor,
@@ -16,14 +16,9 @@ contract ICVCMGovernor is
     GovernorVotes,
     GovernorVotesQuorumFraction
 {
-    ICVCMConstitution private constitution;
     ICVCMRoles private roles;
 
-    constructor(
-        IVotes _token,
-        ICVCMConstitution _constitution,
-        ICVCMRoles _roles
-    )
+    constructor(IVotes _token, ICVCMRoles _roles)
         Governor("ICVCMGovernor")
         GovernorSettings(
             0, /* 0 block */
@@ -33,7 +28,6 @@ contract ICVCMGovernor is
         GovernorVotes(_token)
         GovernorVotesQuorumFraction(4)
     {
-        constitution = _constitution;
         roles = _roles;
     }
 
@@ -75,6 +69,21 @@ contract ICVCMGovernor is
         return super.proposalThreshold();
     }
 
+    function propose(
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory calldatas,
+        string memory description
+    )
+        public
+        virtual
+        override
+        proposeAuthorisation(targets, calldatas)
+        returns (uint256)
+    {
+        return super.propose(targets, values, calldatas, description);
+    }
+
     function execute(
         address[] memory targets,
         uint256[] memory values,
@@ -91,6 +100,24 @@ contract ICVCMGovernor is
         bytes32 descriptionHash
     ) public virtual onlyRegulator returns (uint256) {
         return super._cancel(targets, values, calldatas, descriptionHash);
+    }
+
+    modifier proposeAuthorisation(
+        address[] memory targets,
+        bytes[] memory calldatas
+    ) {
+        Role memberRole = roles.getMember(msg.sender).role;
+        for (uint256 i = 0; i < targets.length; ++i) {
+            require(
+                roles.hasProposalAuthorization(
+                    targets[i],
+                    bytes4(calldatas[i]),
+                    memberRole
+                ),
+                "Unauthorized"
+            );
+        }
+        _;
     }
 
     modifier onlyRegulator() {

@@ -54,7 +54,7 @@ export const createProposal = async (
   executionAddress: string,
   encodedFunctionCall: string,
   description: string
-) => {
+): Promise<BigNumberish> => {
   const proposalTx = await governor.propose(
     [executionAddress],
     [0],

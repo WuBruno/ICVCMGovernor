@@ -1,4 +1,5 @@
 import { ethers } from "hardhat";
+import { Roles } from "~/@types";
 import {
   ICVCMConstitution,
   ICVCMGovernor,
@@ -14,15 +15,10 @@ export const deployICVCMToken = async () => {
 
 export const deployICVCMGovernor = async (
   tokenAddress: string,
-  constitutionAddress: string,
   roleAddress: string
 ) => {
   const contractFactory = await ethers.getContractFactory("ICVCMGovernor");
-  const contract = await contractFactory.deploy(
-    tokenAddress,
-    constitutionAddress,
-    roleAddress
-  );
+  const contract = await contractFactory.deploy(tokenAddress, roleAddress);
   return contract.deployed();
 };
 
@@ -47,8 +43,36 @@ export async function deployContracts(
   const roles: ICVCMRoles = await deployICVCMRoles(token.address);
   const governor: ICVCMGovernor = await deployICVCMGovernor(
     token.address,
-    constitution.address,
     roles.address
+  );
+
+  // Assign authorization of contracts
+  await roles.setProposalAuthorization(
+    [
+      roles.address,
+      roles.address,
+      constitution.address,
+      constitution.address,
+      constitution.address,
+      constitution.address,
+    ],
+    [
+      roles.interface.getSighash("addMember"),
+      roles.interface.getSighash("removeMember"),
+      constitution.interface.getSighash("setPrinciples"),
+      constitution.interface.getSighash("setPrinciples"),
+      constitution.interface.getSighash("setStrategies"),
+      constitution.interface.getSighash("setStrategies"),
+    ],
+    [
+      Roles.Director,
+      Roles.Director,
+      Roles.Director,
+      Roles.Expert,
+      Roles.Director,
+      Roles.Secretariat,
+    ],
+    [true, true, true, true, true, true]
   );
 
   // Assign token contract ownership to roles contract
