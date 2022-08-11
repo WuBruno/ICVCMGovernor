@@ -7,29 +7,28 @@ import "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol
 import "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
 import "./ICVCMRoles.sol";
-import "hardhat/console.sol";
+import "./ICVCMGovernorAuthorization.sol";
 
+// block time
 contract ICVCMGovernor is
     Governor,
     GovernorSettings,
     GovernorCountingSimple,
     GovernorVotes,
-    GovernorVotesQuorumFraction
+    GovernorVotesQuorumFraction,
+    ICVCMGovernorAuthorization
 {
-    ICVCMRoles private roles;
-
     constructor(IVotes _token, ICVCMRoles _roles)
         Governor("ICVCMGovernor")
         GovernorSettings(
             0, /* 0 block */
-            273, /* 1 hour */
+            45818, /* 1 week, 13.2 blocks/s */
             0
         )
         GovernorVotes(_token)
-        GovernorVotesQuorumFraction(4)
-    {
-        roles = _roles;
-    }
+        GovernorVotesQuorumFraction(50)
+        ICVCMGovernorAuthorization(_roles)
+    {}
 
     // The following functions are overrides required by Solidity.
 
@@ -100,31 +99,5 @@ contract ICVCMGovernor is
         bytes32 descriptionHash
     ) public virtual onlyRegulator returns (uint256) {
         return super._cancel(targets, values, calldatas, descriptionHash);
-    }
-
-    modifier proposeAuthorisation(
-        address[] memory targets,
-        bytes[] memory calldatas
-    ) {
-        Role memberRole = roles.getMember(msg.sender).role;
-        for (uint256 i = 0; i < targets.length; ++i) {
-            require(
-                roles.hasProposalAuthorization(
-                    targets[i],
-                    bytes4(calldatas[i]),
-                    memberRole
-                ),
-                "Unauthorized"
-            );
-        }
-        _;
-    }
-
-    modifier onlyRegulator() {
-        require(
-            roles.getMember(msg.sender).role == Role.Regulator,
-            "Execute restricted to Regulator"
-        );
-        _;
     }
 }

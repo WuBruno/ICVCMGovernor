@@ -99,7 +99,7 @@ contract ICVCMRoles is Ownable {
         require(!memberSet.contains(memberAddress), "Member already exists");
 
         Member memory member = Member(role, name);
-        _addMemberData(memberAddress, member);
+        _addMember(memberAddress, member);
 
         emit MemberAdded(memberAddress, role, name);
 
@@ -109,9 +109,7 @@ contract ICVCMRoles is Ownable {
         }
     }
 
-    function _addMemberData(address memberAddress, Member memory member)
-        private
-    {
+    function _addMember(address memberAddress, Member memory member) private {
         addressToMember[memberAddress] = member;
         memberSet.add(memberAddress);
     }

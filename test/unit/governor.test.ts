@@ -270,7 +270,7 @@ describe("Governor Contract", async () => {
           proposalDescription,
           director1
         )
-      ).to.revertedWith("Execute restricted to Regulator");
+      ).to.revertedWith("Function restricted to Regulator");
     });
 
     it("should cancel after success on votes", async () => {
