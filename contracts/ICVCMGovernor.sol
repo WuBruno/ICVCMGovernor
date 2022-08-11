@@ -30,7 +30,46 @@ contract ICVCMGovernor is
         ICVCMGovernorAuthorization(_roles)
     {}
 
-    // The following functions are overrides required by Solidity.
+    function COUNTING_MODE()
+        public
+        pure
+        virtual
+        override(IGovernor, GovernorCountingSimple)
+        returns (string memory)
+    {
+        return "support=bravo&quorum=against,for,abstain";
+    }
+
+    // GovernorCountingSimple does not contribute againstVotes to quorum.
+    function _quorumReached(uint256 proposalId)
+        internal
+        view
+        virtual
+        override(Governor, GovernorCountingSimple)
+        returns (bool)
+    {
+        (
+            uint256 againstVotes,
+            uint256 forVotes,
+            uint256 abstainVotes
+        ) = proposalVotes(proposalId);
+
+        return
+            quorum(proposalSnapshot(proposalId)) <=
+            againstVotes + forVotes + abstainVotes;
+    }
+
+    function _voteSucceeded(uint256 proposalId)
+        internal
+        view
+        virtual
+        override(Governor, GovernorCountingSimple)
+        returns (bool)
+    {
+        (uint256 againstVotes, uint256 forVotes, ) = proposalVotes(proposalId);
+
+        return forVotes >= 2 * againstVotes;
+    }
 
     function votingDelay()
         public
