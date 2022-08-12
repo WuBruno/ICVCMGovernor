@@ -26,16 +26,16 @@ struct MemberOutput {
 contract ICVCMRoles is Ownable {
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    EnumerableSet.AddressSet private memberSet;
-    mapping(address => Member) private addressToMember;
-    ICVCMToken private token;
+    EnumerableSet.AddressSet private _memberSet;
+    mapping(address => Member) private _addressToMember;
+    ICVCMToken private _token;
 
     // Contract Address => Function Selector => Role => Boolean
     mapping(address => mapping(bytes4 => mapping(Role => bool)))
         private proposalAuthorization;
 
     constructor(ICVCMToken tokenAddress) {
-        token = tokenAddress;
+        _token = tokenAddress;
     }
 
     event MemberAdded(address memberAddress, Role role, bytes32 name);
@@ -76,19 +76,19 @@ contract ICVCMRoles is Ownable {
     }
 
     function removeMember(address memberAddress) public onlyOwner {
-        if (addressToMember[memberAddress].role == Role.Director) {
-            uint256 tokenId = token.tokenOfOwnerByIndex(memberAddress, 0);
-            token.burn(tokenId);
+        if (_addressToMember[memberAddress].role == Role.Director) {
+            uint256 tokenId = _token.tokenOfOwnerByIndex(memberAddress, 0);
+            _token.burn(tokenId);
         }
 
         emit MemberRemoved(
             memberAddress,
-            addressToMember[memberAddress].role,
-            addressToMember[memberAddress].name
+            _addressToMember[memberAddress].role,
+            _addressToMember[memberAddress].name
         );
 
-        memberSet.remove(memberAddress);
-        delete addressToMember[memberAddress];
+        _memberSet.remove(memberAddress);
+        delete _addressToMember[memberAddress];
     }
 
     function addMember(
@@ -96,22 +96,22 @@ contract ICVCMRoles is Ownable {
         Role role,
         bytes32 name
     ) public onlyOwner {
-        require(!memberSet.contains(memberAddress), "Member already exists");
+        require(!_memberSet.contains(memberAddress), "Member already exists");
 
         Member memory member = Member(role, name);
         _addMember(memberAddress, member);
 
         emit MemberAdded(memberAddress, role, name);
 
-        // Mint token if Director
+        // Mint _token if Director
         if (role == Role.Director) {
-            token.safeMint(memberAddress);
+            _token.safeMint(memberAddress);
         }
     }
 
     function _addMember(address memberAddress, Member memory member) private {
-        addressToMember[memberAddress] = member;
-        memberSet.add(memberAddress);
+        _addressToMember[memberAddress] = member;
+        _memberSet.add(memberAddress);
     }
 
     function getMember(address memberAddress)
@@ -119,16 +119,16 @@ contract ICVCMRoles is Ownable {
         view
         returns (Member memory)
     {
-        require(memberSet.contains(memberAddress), "Member not found");
-        return addressToMember[memberAddress];
+        require(_memberSet.contains(memberAddress), "Member not found");
+        return _addressToMember[memberAddress];
     }
 
     function getMembers() public view returns (MemberOutput[] memory) {
-        uint256 memberCount = memberSet.length();
+        uint256 memberCount = _memberSet.length();
         MemberOutput[] memory members = new MemberOutput[](memberCount);
         for (uint256 i = 0; i < memberCount; i++) {
-            address memberAddress = memberSet.at(i);
-            Member memory member = addressToMember[memberAddress];
+            address memberAddress = _memberSet.at(i);
+            Member memory member = _addressToMember[memberAddress];
             members[i] = MemberOutput(member.role, member.name, memberAddress);
         }
 

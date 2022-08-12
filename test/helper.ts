@@ -1,8 +1,11 @@
 import { mine } from "@nomicfoundation/hardhat-network-helpers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import * as dotenv from "dotenv";
 import { BigNumberish, ethers } from "ethers";
 import { Roles } from "~/@types";
 import { ICVCMGovernor, ICVCMRoles } from "~/typechain";
+
+dotenv.config();
 
 export const addMember = async (
   roles: ICVCMRoles,
@@ -36,7 +39,7 @@ export const createAndPassProposal = async (
     await voteProposal(governor.connect(voter), proposalId);
   }
 
-  await mine(300);
+  await mine(Number(process.env.VOTING_PERIOD));
 
   await executeProposal(
     governor,

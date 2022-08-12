@@ -127,7 +127,7 @@ contract ICVCMGovernor is
         uint256[] memory values,
         bytes[] memory calldatas,
         bytes32 descriptionHash
-    ) public payable virtual override onlyRegulator returns (uint256) {
+    ) public payable virtual override returns (uint256) {
         return super.execute(targets, values, calldatas, descriptionHash);
     }
 

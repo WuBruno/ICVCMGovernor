@@ -4,27 +4,27 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract ICVCMConstitution is Ownable {
-    string private principles = "";
-    string private strategies = "";
+    string private _principles = "";
+    string private _strategies = "";
 
     event UpdatePrinciples(string currPrinciples, string newPrinciples);
     event UpdateStrategies(string currStrategies, string newStrategies);
 
     function getPrinciples() public view returns (string memory) {
-        return principles;
+        return _principles;
     }
 
     function getStrategies() public view returns (string memory) {
-        return strategies;
+        return _strategies;
     }
 
     function setPrinciples(string calldata newPrinciples) public onlyOwner {
-        emit UpdatePrinciples(principles, newPrinciples);
-        principles = newPrinciples;
+        emit UpdatePrinciples(_principles, newPrinciples);
+        _principles = newPrinciples;
     }
 
     function setStrategies(string calldata newStrategies) public onlyOwner {
-        emit UpdateStrategies(strategies, newStrategies);
-        strategies = newStrategies;
+        emit UpdateStrategies(_strategies, newStrategies);
+        _strategies = newStrategies;
     }
 }
