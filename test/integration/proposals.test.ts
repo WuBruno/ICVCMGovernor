@@ -139,5 +139,51 @@ describe("Proposal Integration Tests", async () => {
         "Member's voting power should be 0 once removed"
       ).to.equal(0);
     });
+
+    it("should pass set voting quorum proposal", async () => {
+      const description = "Change Quorum";
+      const newQuorum = 66;
+      const updateQuorumCall = governor.interface.encodeFunctionData(
+        "updateQuorumNumerator",
+        [newQuorum]
+      );
+
+      await createAndPassProposal(
+        governor,
+        governor.address,
+        updateQuorumCall,
+        description,
+        [owner, user2],
+        regulator
+      );
+
+      expect(
+        await governor.quorumNumerator(),
+        "Voting quorum should have updated"
+      ).to.equal(newQuorum);
+    });
+
+    it("should pass set voting period proposal", async () => {
+      const description = "Change Voting Period";
+      const newVotingPeriod = 100;
+      const updateQuorumCall = governor.interface.encodeFunctionData(
+        "setVotingPeriod",
+        [newVotingPeriod]
+      );
+
+      await createAndPassProposal(
+        governor,
+        governor.address,
+        updateQuorumCall,
+        description,
+        [owner, user2],
+        regulator
+      );
+
+      expect(
+        await governor.votingPeriod(),
+        "Voting period should have updated"
+      ).to.equal(newVotingPeriod);
+    });
   });
 });

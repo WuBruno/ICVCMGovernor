@@ -55,6 +55,8 @@ export async function deployContracts(
       constitution.address,
       constitution.address,
       constitution.address,
+      governor.address,
+      governor.address,
     ],
     [
       roles.interface.getSighash("addMember"),
@@ -63,6 +65,8 @@ export async function deployContracts(
       constitution.interface.getSighash("setPrinciples"),
       constitution.interface.getSighash("setStrategies"),
       constitution.interface.getSighash("setStrategies"),
+      governor.interface.getSighash("updateQuorumNumerator"),
+      governor.interface.getSighash("setVotingPeriod"),
     ],
     [
       Roles.Director,
@@ -71,8 +75,10 @@ export async function deployContracts(
       Roles.Expert,
       Roles.Director,
       Roles.Secretariat,
+      Roles.Director,
+      Roles.Director,
     ],
-    [true, true, true, true, true, true]
+    [true, true, true, true, true, true, true, true]
   );
 
   // Assign token contract ownership to roles contract
