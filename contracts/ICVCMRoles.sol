@@ -27,12 +27,12 @@ contract ICVCMRoles is Ownable {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     EnumerableSet.AddressSet private _memberSet;
-    mapping(address => Member) private _addressToMember;
+    mapping(address => Member) private _members;
     ICVCMToken private _token;
 
     // Contract Address => Function Selector => Role => Boolean
     mapping(address => mapping(bytes4 => mapping(Role => bool)))
-        private proposalAuthorization;
+        private _proposalAuthorization;
 
     constructor(ICVCMToken tokenAddress) {
         _token = tokenAddress;
@@ -47,7 +47,7 @@ contract ICVCMRoles is Ownable {
         bytes4 selector,
         Role role
     ) public view returns (bool) {
-        return proposalAuthorization[contractAddress][selector][role];
+        return _proposalAuthorization[contractAddress][selector][role];
     }
 
     function _setProposalAuthorization(
@@ -56,7 +56,7 @@ contract ICVCMRoles is Ownable {
         Role role,
         bool allow
     ) private {
-        proposalAuthorization[contractAddress][selector][role] = allow;
+        _proposalAuthorization[contractAddress][selector][role] = allow;
     }
 
     function setProposalAuthorization(
@@ -75,22 +75,6 @@ contract ICVCMRoles is Ownable {
         }
     }
 
-    function removeMember(address memberAddress) public onlyOwner {
-        if (_addressToMember[memberAddress].role == Role.Director) {
-            uint256 tokenId = _token.tokenOfOwnerByIndex(memberAddress, 0);
-            _token.burn(tokenId);
-        }
-
-        emit MemberRemoved(
-            memberAddress,
-            _addressToMember[memberAddress].role,
-            _addressToMember[memberAddress].name
-        );
-
-        _memberSet.remove(memberAddress);
-        delete _addressToMember[memberAddress];
-    }
-
     function addMember(
         address memberAddress,
         Role role,
@@ -101,8 +85,6 @@ contract ICVCMRoles is Ownable {
         Member memory member = Member(role, name);
         _addMember(memberAddress, member);
 
-        emit MemberAdded(memberAddress, role, name);
-
         // Mint _token if Director
         if (role == Role.Director) {
             _token.safeMint(memberAddress);
@@ -110,8 +92,32 @@ contract ICVCMRoles is Ownable {
     }
 
     function _addMember(address memberAddress, Member memory member) private {
-        _addressToMember[memberAddress] = member;
+        _members[memberAddress] = member;
         _memberSet.add(memberAddress);
+
+        emit MemberAdded(memberAddress, member.role, member.name);
+    }
+
+    function removeMember(address memberAddress) public onlyOwner {
+        require(_memberSet.contains(memberAddress), "Member does not exist");
+
+        _removeMember(memberAddress);
+
+        if (_members[memberAddress].role == Role.Director) {
+            uint256 tokenId = _token.tokenOfOwnerByIndex(memberAddress, 0);
+            _token.burn(tokenId);
+        }
+    }
+
+    function _removeMember(address memberAddress) private {
+        _memberSet.remove(memberAddress);
+        delete _members[memberAddress];
+
+        emit MemberRemoved(
+            memberAddress,
+            _members[memberAddress].role,
+            _members[memberAddress].name
+        );
     }
 
     function getMember(address memberAddress)
@@ -120,7 +126,7 @@ contract ICVCMRoles is Ownable {
         returns (Member memory)
     {
         require(_memberSet.contains(memberAddress), "Member not found");
-        return _addressToMember[memberAddress];
+        return _members[memberAddress];
     }
 
     function getMembers() public view returns (MemberOutput[] memory) {
@@ -128,7 +134,7 @@ contract ICVCMRoles is Ownable {
         MemberOutput[] memory members = new MemberOutput[](memberCount);
         for (uint256 i = 0; i < memberCount; i++) {
             address memberAddress = _memberSet.at(i);
-            Member memory member = _addressToMember[memberAddress];
+            Member memory member = _members[memberAddress];
             members[i] = MemberOutput(member.role, member.name, memberAddress);
         }
 

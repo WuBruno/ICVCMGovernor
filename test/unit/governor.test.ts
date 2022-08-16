@@ -202,8 +202,7 @@ describe("Governor Contract", async () => {
     it("should vote for and succeed proposal", async () => {
       await voteProposal(governor, proposalId);
       await voteProposal(governor.connect(director2), proposalId);
-
-      await mine(Number(process.env.VOTING_PERIOD));
+      // await mine(Number(process.env.VOTING_PERIOD));
 
       expect(
         await governor.state(proposalId),
@@ -214,8 +213,7 @@ describe("Governor Contract", async () => {
     it("should vote against proposal and defeat", async () => {
       await voteProposal(governor, proposalId, 0);
       await voteProposal(governor.connect(director2), proposalId, 0);
-
-      await mine(Number(process.env.VOTING_PERIOD));
+      // await mine(Number(process.env.VOTING_PERIOD));
 
       expect(
         await governor.state(proposalId),
@@ -228,7 +226,7 @@ describe("Governor Contract", async () => {
     it("should succeed when regulator executes", async () => {
       await voteProposal(governor, proposalId);
       await voteProposal(governor.connect(director2), proposalId);
-      await mine(Number(process.env.VOTING_PERIOD));
+      // await mine(Number(process.env.VOTING_PERIOD));
 
       await executeProposal(
         governor,
@@ -262,7 +260,7 @@ describe("Governor Contract", async () => {
     it("should fail execution by director", async () => {
       await voteProposal(governor, proposalId);
       await voteProposal(governor.connect(director2), proposalId);
-      await mine(Number(process.env.VOTING_PERIOD));
+      // await mine(Number(process.env.VOTING_PERIOD));
 
       expect(
         executeProposal(
@@ -278,7 +276,7 @@ describe("Governor Contract", async () => {
     it("should cancel after success on votes", async () => {
       await voteProposal(governor, proposalId);
       await voteProposal(governor.connect(director2), proposalId);
-      await mine(Number(process.env.VOTING_PERIOD));
+      // await mine(Number(process.env.VOTING_PERIOD));
 
       await cancelProposal(
         governor,

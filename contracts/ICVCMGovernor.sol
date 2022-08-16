@@ -59,6 +59,40 @@ contract ICVCMGovernor is
             againstVotes + forVotes + abstainVotes;
     }
 
+    function state(uint256 proposalId)
+        public
+        view
+        virtual
+        override
+        returns (ProposalState)
+    {
+        ProposalState _state = super.state(proposalId);
+
+        // Check if possible to end proposal early
+        if (_state == ProposalState.Active) {
+            (
+                uint256 againstVotes,
+                uint256 forVotes,
+                uint256 abstainVotes
+            ) = proposalVotes(proposalId);
+
+            // Check if all votes are submitted
+            if (
+                againstVotes + forVotes + abstainVotes ==
+                token.getPastTotalSupply(proposalSnapshot(proposalId))
+            ) {
+                // Then calculate vote results
+                if (_quorumReached(proposalId) && _voteSucceeded(proposalId)) {
+                    return ProposalState.Succeeded;
+                } else {
+                    return ProposalState.Defeated;
+                }
+            }
+        }
+
+        return _state;
+    }
+
     function _voteSucceeded(uint256 proposalId)
         internal
         view
