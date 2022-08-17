@@ -47,8 +47,10 @@ export async function deployContracts(
   );
 
   // Assign authorization of contracts
-  await roles.setProposalAuthorization(
+  await roles.batchAddProposalAuthorization(
     [
+      roles.address,
+      roles.address,
       roles.address,
       roles.address,
       constitution.address,
@@ -61,6 +63,8 @@ export async function deployContracts(
     [
       roles.interface.getSighash("addMember"),
       roles.interface.getSighash("removeMember"),
+      roles.interface.getSighash("addProposalAuthorization"),
+      roles.interface.getSighash("removeProposalAuthorization"),
       constitution.interface.getSighash("setPrinciples"),
       constitution.interface.getSighash("setPrinciples"),
       constitution.interface.getSighash("setStrategies"),
@@ -72,13 +76,14 @@ export async function deployContracts(
       Roles.Director,
       Roles.Director,
       Roles.Director,
+      Roles.Director,
+      Roles.Director,
       Roles.Expert,
       Roles.Director,
       Roles.Secretariat,
       Roles.Director,
       Roles.Director,
-    ],
-    [true, true, true, true, true, true, true, true]
+    ]
   );
 
   // Assign token contract ownership to roles contract

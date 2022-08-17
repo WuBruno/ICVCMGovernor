@@ -23,6 +23,12 @@ struct MemberOutput {
     address memberAddress;
 }
 
+struct ProposalAuthorization {
+    address contractAddress;
+    bytes4 selector;
+    Role role;
+}
+
 contract ICVCMRoles is Ownable {
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -30,8 +36,10 @@ contract ICVCMRoles is Ownable {
     mapping(address => Member) private _members;
     ICVCMToken private _token;
 
+    ProposalAuthorization[] private _allProposalAuthorization;
+
     // Contract Address => Function Selector => Role => Boolean
-    mapping(address => mapping(bytes4 => mapping(Role => bool)))
+    mapping(address => mapping(bytes4 => mapping(Role => uint256)))
         private _proposalAuthorization;
 
     constructor(ICVCMToken tokenAddress) {
@@ -42,37 +50,90 @@ contract ICVCMRoles is Ownable {
 
     event MemberRemoved(address memberAddress, Role role, bytes32 name);
 
+    event ProposalAuthorizationAdded(
+        address contractAddress,
+        bytes4 selector,
+        Role role
+    );
+
+    event ProposalAuthorizationRemoved(
+        address contractAddress,
+        bytes4 selector,
+        Role role
+    );
+
+    function getProposalAuthorization(
+        address contractAddress,
+        bytes4 selector,
+        Role role
+    ) public view returns (uint256) {
+        return _proposalAuthorization[contractAddress][selector][role];
+    }
+
     function hasProposalAuthorization(
         address contractAddress,
         bytes4 selector,
         Role role
     ) public view returns (bool) {
-        return _proposalAuthorization[contractAddress][selector][role];
+        return _proposalAuthorization[contractAddress][selector][role] > 0;
     }
 
-    function _setProposalAuthorization(
-        address contractAddress,
-        bytes4 selector,
-        Role role,
-        bool allow
-    ) private {
-        _proposalAuthorization[contractAddress][selector][role] = allow;
-    }
-
-    function setProposalAuthorization(
+    function batchAddProposalAuthorization(
         address[] memory contracts,
         bytes4[] memory selectors,
-        Role[] memory roles,
-        bool[] memory allow
+        Role[] memory roles
     ) public onlyOwner {
         for (uint256 i = 0; i < contracts.length; ++i) {
-            _setProposalAuthorization(
-                contracts[i],
-                selectors[i],
-                roles[i],
-                allow[i]
-            );
+            addProposalAuthorization(contracts[i], selectors[i], roles[i]);
         }
+    }
+
+    function addProposalAuthorization(
+        address contractAddress,
+        bytes4 selector,
+        Role role
+    ) public onlyOwner {
+        emit ProposalAuthorizationAdded(contractAddress, selector, role);
+        _allProposalAuthorization.push(
+            ProposalAuthorization(contractAddress, selector, role)
+        );
+
+        _proposalAuthorization[contractAddress][selector][
+            role
+        ] = _allProposalAuthorization.length;
+    }
+
+    function removeProposalAuthorization(
+        address contractAddress,
+        bytes4 selector,
+        Role role
+    ) public onlyOwner {
+        emit ProposalAuthorizationRemoved(contractAddress, selector, role);
+        // Get items for swap
+        uint256 index = _proposalAuthorization[contractAddress][selector][
+            role
+        ] - 1;
+        ProposalAuthorization storage last = _allProposalAuthorization[
+            _allProposalAuthorization.length - 1
+        ];
+
+        // Swap
+        _allProposalAuthorization[index] = last;
+        _proposalAuthorization[last.contractAddress][last.selector][
+            last.role
+        ] = index;
+
+        // Delete
+        _allProposalAuthorization.pop();
+        delete _proposalAuthorization[contractAddress][selector][role];
+    }
+
+    function getProposalAuthorizations()
+        public
+        view
+        returns (ProposalAuthorization[] memory)
+    {
+        return _allProposalAuthorization;
     }
 
     function addMember(

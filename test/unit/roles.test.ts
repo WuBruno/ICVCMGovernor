@@ -3,10 +3,11 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { Roles } from "~/@types";
 import { deployContracts } from "~/services/deployment";
-import { ICVCMRoles, ICVCMToken } from "~/typechain";
+import { ICVCMGovernor, ICVCMRoles, ICVCMToken } from "~/typechain";
 import { addMember } from "../helper";
 
 describe("Roles Contract", async () => {
+  let governor: ICVCMGovernor;
   let roles: ICVCMRoles;
   let token: ICVCMToken;
   let user: SignerWithAddress;
@@ -16,7 +17,7 @@ describe("Roles Contract", async () => {
   beforeEach(async () => {
     [user] = await ethers.getSigners();
 
-    [token, , roles] = await deployContracts(undefined, false);
+    [token, governor, roles] = await deployContracts(undefined, false);
     await addMember(roles, user.address, role, name);
   });
 
@@ -46,5 +47,31 @@ describe("Roles Contract", async () => {
     expect(ethers.utils.parseBytes32String(members[0].name)).to.equal(name);
     expect(members[0].role).to.equal(role);
     expect(members[0].memberAddress).to.equal(user.address);
+  });
+
+  describe("Proposal Authorization Tests", () => {
+    it("should delete add member proposal authorization for director", async () => {
+      await roles.removeProposalAuthorization(
+        roles.address,
+        roles.interface.getSighash("addMember"),
+        Roles.Director
+      );
+
+      expect(
+        await roles.hasProposalAuthorization(
+          roles.address,
+          roles.interface.getSighash("addMember"),
+          Roles.Director
+        )
+      ).to.equal(false);
+
+      expect(
+        await roles.hasProposalAuthorization(
+          governor.address,
+          governor.interface.getSighash("setVotingPeriod"),
+          Roles.Director
+        )
+      );
+    });
   });
 });

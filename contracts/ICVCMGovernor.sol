@@ -22,7 +22,7 @@ contract ICVCMGovernor is
         Governor("ICVCMGovernor")
         GovernorSettings(
             0, /* 0 block */
-            45818, /* 1 week, 13.2 blocks/s */
+            45818, /* 1 week, 13.2 s/block */
             0
         )
         GovernorVotes(_token)
