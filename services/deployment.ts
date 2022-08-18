@@ -24,8 +24,8 @@ export const deployICVCMGovernor = async (
 
 export const deployICVCMRoles = async (tokenAddress: string) => {
   const contractFactory = await ethers.getContractFactory("ICVCMRoles");
-  const contract = await contractFactory.deploy(tokenAddress);
-  return contract.deployed();
+  const contract = await upgrades.deployProxy(contractFactory, [tokenAddress]);
+  return contract.deployed() as Promise<ICVCMRoles>;
 };
 
 export const deployICVCMConstitution = async (): Promise<ICVCMConstitution> => {

@@ -35,7 +35,7 @@ describe("Constitution Contract", async () => {
     expect(await constitution.getStrategies(), "Failed to set second strategy");
   });
 
-  it.only("should upgrade successfully with new features", async () => {
+  it("should upgrade successfully with new features", async () => {
     expect(await constitution.getVersion()).to.equal(1);
     await constitution.setPrinciples("hello");
     await constitution.setStrategies("world");

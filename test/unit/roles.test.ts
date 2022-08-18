@@ -1,6 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 import { Roles } from "~/@types";
 import { deployContracts } from "~/services/deployment";
 import { ICVCMGovernor, ICVCMRoles, ICVCMToken } from "~/typechain";
@@ -73,5 +73,17 @@ describe("Roles Contract", async () => {
         )
       );
     });
+  });
+
+  it.only("should upgrade successfully", async () => {
+    expect(await roles.getVersion()).to.equal(1);
+
+    const Contract = await ethers.getContractFactory("ICVCMRoles");
+    const roles2 = (await upgrades.upgradeProxy(
+      roles.address,
+      Contract
+    )) as ICVCMRoles;
+
+    expect(await roles2.getVersion()).to.equal(2);
   });
 });

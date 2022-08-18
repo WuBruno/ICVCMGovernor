@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 import "./ICVCMToken.sol";
+import "./Upgradable.sol";
 
 enum Role {
     Director,
@@ -29,12 +30,12 @@ struct ProposalAuthorization {
     Role role;
 }
 
-contract ICVCMRoles is Ownable {
-    using EnumerableSet for EnumerableSet.AddressSet;
+contract ICVCMRoles is OwnableUpgradeable, Upgradable {
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     ICVCMToken private _token;
 
-    EnumerableSet.AddressSet private _memberSet;
+    EnumerableSetUpgradeable.AddressSet private _memberSet;
     mapping(address => Member) private _members;
 
     // Contract Address => Function Selector => Role => Boolean
@@ -58,8 +59,20 @@ contract ICVCMRoles is Ownable {
         Role role
     );
 
-    constructor(ICVCMToken tokenAddress) {
+    function initialize(ICVCMToken tokenAddress) public initializer {
+        __Ownable_init();
+        __Upgradeable_init();
+
         _token = tokenAddress;
+    }
+
+    function _authorizeUpgrade(address implementationAddress)
+        internal
+        virtual
+        override
+        onlyOwner
+    {
+        super._authorizeUpgrade(implementationAddress);
     }
 
     function getProposalAuthorization(
