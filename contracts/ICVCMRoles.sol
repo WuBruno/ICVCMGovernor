@@ -59,6 +59,11 @@ contract ICVCMRoles is OwnableUpgradeable, Upgradable {
         Role role
     );
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     function initialize(ICVCMToken tokenAddress) public initializer {
         __Ownable_init();
         __Upgradeable_init();

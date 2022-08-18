@@ -75,7 +75,7 @@ describe("Roles Contract", async () => {
     });
   });
 
-  it.only("should upgrade successfully", async () => {
+  it("should upgrade successfully", async () => {
     expect(await roles.getVersion()).to.equal(1);
 
     const Contract = await ethers.getContractFactory("ICVCMRoles");

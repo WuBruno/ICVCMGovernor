@@ -9,8 +9,8 @@ import {
 
 export const deployICVCMToken = async () => {
   const contractFactory = await ethers.getContractFactory("ICVCMToken");
-  const contract = await contractFactory.deploy();
-  return contract.deployed();
+  const contract = await upgrades.deployProxy(contractFactory, []);
+  return contract.deployed() as Promise<ICVCMToken>;
 };
 
 export const deployICVCMGovernor = async (
@@ -87,7 +87,9 @@ export async function deployContracts(
   );
 
   // Assign token contract ownership to roles contract
-  await token.transferOwnership(roles.address);
+  await token.grantRole(await token.ISSUER_ROLE(), roles.address);
+  await token.transferAdmin(governor.address);
+
   await constitution.transferOwnership(governor.address);
 
   preRoleOwnershipTransfer && (await preRoleOwnershipTransfer(roles));

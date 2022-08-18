@@ -14,6 +14,11 @@ contract ICVCMConstitution is OwnableUpgradeable, Upgradable {
     event UpdatePrinciples(string currPrinciples, string newPrinciples);
     event UpdateStrategies(string currStrategies, string newStrategies);
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     function initialize() public initializer {
         __Ownable_init();
         __Upgradeable_init();

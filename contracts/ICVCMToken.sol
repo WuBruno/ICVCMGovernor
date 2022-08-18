@@ -1,22 +1,69 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/draft-ERC721Votes.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721BurnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/cryptography/draft-EIP712Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/draft-ERC721VotesUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
-contract ICVCMToken is ERC721, ERC721Enumerable, Ownable, EIP712, ERC721Votes {
-    using Counters for Counters.Counter;
+import "./Upgradable.sol";
 
-    Counters.Counter private _tokenIdCounter;
+contract ICVCMToken is
+    ERC721Upgradeable,
+    ERC721EnumerableUpgradeable,
+    ERC721BurnableUpgradeable,
+    AccessControlUpgradeable,
+    EIP712Upgradeable,
+    ERC721VotesUpgradeable,
+    Upgradable
+{
+    using CountersUpgradeable for CountersUpgradeable.Counter;
 
-    // solhint-disable-next-line no-empty-blocks
-    constructor() ERC721("ICVCMToken", "ICVCM") EIP712("ICVCMToken", "1") {}
+    bytes32 public constant ISSUER_ROLE = keccak256("ISSUER_ROLE");
+    CountersUpgradeable.Counter private _tokenIdCounter;
 
-    function safeMint(address to) public onlyOwner returns (uint256) {
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    function initialize() public initializer {
+        __ERC721_init("ICVCMToken", "ICVCM");
+        __ERC721Enumerable_init();
+        __ERC721Burnable_init();
+        __AccessControl_init();
+        __EIP712_init("ICVCMToken", "1");
+        __ERC721Votes_init();
+        __UUPSUpgradeable_init();
+
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
+    function transferAdmin(address newAdmin)
+        public
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        _grantRole(DEFAULT_ADMIN_ROLE, newAdmin);
+        renounceRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
+    function _authorizeUpgrade(address implementationAddress)
+        internal
+        virtual
+        override
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        super._authorizeUpgrade(implementationAddress);
+    }
+
+    function safeMint(address to)
+        public
+        onlyRole(ISSUER_ROLE)
+        returns (uint256)
+    {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
@@ -25,7 +72,7 @@ contract ICVCMToken is ERC721, ERC721Enumerable, Ownable, EIP712, ERC721Votes {
         return tokenId;
     }
 
-    function burn(uint256 tokenId) public onlyOwner {
+    function burn(uint256 tokenId) public override onlyRole(ISSUER_ROLE) {
         _burn(tokenId);
     }
 
@@ -41,7 +88,7 @@ contract ICVCMToken is ERC721, ERC721Enumerable, Ownable, EIP712, ERC721Votes {
         address from,
         address to,
         uint256 tokenId
-    ) internal override(ERC721, ERC721Enumerable) {
+    ) internal override(ERC721Upgradeable, ERC721EnumerableUpgradeable) {
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
@@ -49,14 +96,18 @@ contract ICVCMToken is ERC721, ERC721Enumerable, Ownable, EIP712, ERC721Votes {
         address from,
         address to,
         uint256 tokenId
-    ) internal override(ERC721, ERC721Votes) {
+    ) internal override(ERC721Upgradeable, ERC721VotesUpgradeable) {
         super._afterTokenTransfer(from, to, tokenId);
     }
 
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC721, ERC721Enumerable)
+        override(
+            ERC721Upgradeable,
+            ERC721EnumerableUpgradeable,
+            AccessControlUpgradeable
+        )
         returns (bool)
     {
         return super.supportsInterface(interfaceId);

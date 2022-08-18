@@ -10,11 +10,6 @@ abstract contract Upgradable is Initializable, UUPSUpgradeable {
 
     event ContractUpgraded(uint256 version);
 
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
-
     function __Upgradeable_init() internal onlyInitializing {
         __UUPSUpgradeable_init();
         incrementVersion();
