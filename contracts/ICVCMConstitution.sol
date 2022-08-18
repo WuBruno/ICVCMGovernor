@@ -1,14 +1,33 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract ICVCMConstitution is Ownable {
-    string private _principles = "";
-    string private _strategies = "";
+import "./Upgradable.sol";
 
+contract ICVCMConstitution is OwnableUpgradeable, Upgradable {
+    // State Variables
+    string private _principles;
+    string private _strategies;
+
+    // Events
     event UpdatePrinciples(string currPrinciples, string newPrinciples);
     event UpdateStrategies(string currStrategies, string newStrategies);
+
+    function initialize() public initializer {
+        __Ownable_init();
+        __Upgradeable_init();
+    }
+
+    // Functions
+    function _authorizeUpgrade(address implementationAddress)
+        internal
+        virtual
+        override
+        onlyOwner
+    {
+        super._authorizeUpgrade(implementationAddress);
+    }
 
     function getPrinciples() public view returns (string memory) {
         return _principles;

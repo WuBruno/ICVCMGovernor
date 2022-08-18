@@ -1,6 +1,7 @@
 import { expect } from "chai";
+import { ethers, upgrades } from "hardhat";
 import { deployICVCMConstitution } from "~/services/deployment";
-import { ICVCMConstitution } from "~/typechain";
+import { ICVCMConstitution, ICVCMConstitutionV2 } from "~/typechain";
 
 describe("Constitution Contract", async () => {
   let constitution: ICVCMConstitution;
@@ -32,5 +33,20 @@ describe("Constitution Contract", async () => {
 
     await constitution.setStrategies(strategy2);
     expect(await constitution.getStrategies(), "Failed to set second strategy");
+  });
+
+  it.only("should upgrade successfully with new features", async () => {
+    expect(await constitution.getVersion()).to.equal(1);
+    await constitution.setPrinciples("hello");
+    await constitution.setStrategies("world");
+
+    const Contract = await ethers.getContractFactory("ICVCMConstitutionV2");
+    const constitution2 = (await upgrades.upgradeProxy(
+      constitution.address,
+      Contract
+    )) as ICVCMConstitutionV2;
+
+    expect(await constitution2.getVersion()).to.equal(2);
+    expect(await constitution2.getData()).to.deep.equal(["hello", "world"]);
   });
 });

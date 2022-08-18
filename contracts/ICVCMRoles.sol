@@ -32,19 +32,15 @@ struct ProposalAuthorization {
 contract ICVCMRoles is Ownable {
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    EnumerableSet.AddressSet private _memberSet;
-    mapping(address => Member) private _members;
     ICVCMToken private _token;
 
-    ProposalAuthorization[] private _allProposalAuthorization;
+    EnumerableSet.AddressSet private _memberSet;
+    mapping(address => Member) private _members;
 
     // Contract Address => Function Selector => Role => Boolean
     mapping(address => mapping(bytes4 => mapping(Role => uint256)))
         private _proposalAuthorization;
-
-    constructor(ICVCMToken tokenAddress) {
-        _token = tokenAddress;
-    }
+    ProposalAuthorization[] private _allProposalAuthorization;
 
     event MemberAdded(address memberAddress, Role role, bytes32 name);
 
@@ -61,6 +57,10 @@ contract ICVCMRoles is Ownable {
         bytes4 selector,
         Role role
     );
+
+    constructor(ICVCMToken tokenAddress) {
+        _token = tokenAddress;
+    }
 
     function getProposalAuthorization(
         address contractAddress,

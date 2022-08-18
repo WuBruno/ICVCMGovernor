@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 import { Roles } from "~/@types";
 import {
   ICVCMConstitution,
@@ -28,10 +28,10 @@ export const deployICVCMRoles = async (tokenAddress: string) => {
   return contract.deployed();
 };
 
-export const deployICVCMConstitution = async () => {
+export const deployICVCMConstitution = async (): Promise<ICVCMConstitution> => {
   const contractFactory = await ethers.getContractFactory("ICVCMConstitution");
-  const contract = await contractFactory.deploy();
-  return contract.deployed();
+  const contract = await upgrades.deployProxy(contractFactory, []);
+  return contract.deployed() as Promise<ICVCMConstitution>;
 };
 
 export async function deployContracts(
