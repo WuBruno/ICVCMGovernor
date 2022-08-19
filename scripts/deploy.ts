@@ -3,8 +3,10 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
-import hre from "hardhat";
+import hre, { ethers } from "hardhat";
+import { Roles } from "~/@types";
 import { deployContracts } from "~/services/deployment";
+import { addMember } from "~/test/helper";
 import { writeContractAddresses } from "~/utils";
 
 async function main() {
@@ -15,8 +17,27 @@ async function main() {
   // manually to make sure everything is compiled
   await hre.run("compile");
 
+  const accounts = await ethers.getSigners();
+
   const [ICVCMToken, ICVCMGovernor, ICVCMRoles, ICVCMConstitution] =
-    await deployContracts();
+    await deployContracts(async (roles) => {
+      // Mint Tokens -- only set first 2 as directors
+      for (const [index, account] of accounts.slice(0, 2).entries()) {
+        await addMember(
+          roles,
+          account.address,
+          Roles.Director,
+          `Director${index + 1}`
+        );
+      }
+      await addMember(
+        roles,
+        accounts[2].address,
+        Roles.Regulator,
+        "Regulator1"
+      );
+    });
+
   console.log("ICVCMToken deployed to:", ICVCMToken.address);
   console.log("ICVCMGovernor deployed to:", ICVCMGovernor.address);
   console.log("ICVCMRoles deployed to:", ICVCMRoles.address);
@@ -29,6 +50,8 @@ async function main() {
     ICVCMRoles: ICVCMRoles.address,
     ICVCMConstitution: ICVCMConstitution.address,
   });
+
+  console.log("Account minted a token");
 }
 
 // We recommend this pattern to be able to use async/await everywhere
