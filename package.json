@@ -8,7 +8,7 @@
     "test:types": "yarn types && yarn hardhat test",
     "types": "rm -r ./typechain; yarn hardhat typechain",
     "deploy_upgrade": "yarn hardhat upgrade --network localhost --contract ",
-    "deploy": "yarn hardhat run --network localhost scripts/deploy.ts",
+    "deploy": "yarn hardhat run --network localhost scripts/deploy.ts && yarn migrate",
     "deploy:goerli": "yarn hardhat run --network goerli scripts/deploy.ts",
     "mine": "yarn hardhat mine --network localhost",
     "console": "yarn hardhat console",

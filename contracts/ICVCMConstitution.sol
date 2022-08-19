@@ -77,7 +77,7 @@ contract ICVCMConstitution is OwnableUpgradeable, Upgradable {
         uint256 principleCount = _principleIds.length();
         EntryOutput[] memory principles = new EntryOutput[](principleCount);
 
-        for (uint256 i = 0; i < principleCount; i++) {
+        for (uint256 i = 0; i < principleCount; ++i) {
             uint256 id = _principleIds.at(i);
             principles[i] = EntryOutput(id, _principles[id]);
         }
@@ -121,8 +121,8 @@ contract ICVCMConstitution is OwnableUpgradeable, Upgradable {
         uint256 strategyCount = _strategyIds.length();
         EntryOutput[] memory strategies = new EntryOutput[](strategyCount);
 
-        for (uint256 i = 0; i < strategyCount; i++) {
-            uint256 id = _principleIds.at(i);
+        for (uint256 i = 0; i < strategyCount; ++i) {
+            uint256 id = _strategyIds.at(i);
             strategies[i] = EntryOutput(id, _strategies[id]);
         }
 

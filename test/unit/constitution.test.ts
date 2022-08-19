@@ -20,6 +20,13 @@ describe("Constitution Contract", async () => {
       expect(await constitution.getPrinciple(1)).to.equal(principle);
     });
 
+    it("should add 2 new principle", async () => {
+      await constitution.addPrinciple("new one 2");
+      await constitution.addPrinciple("new one");
+
+      expect(await constitution.getPrinciples()).to.have.lengthOf(3);
+    });
+
     it("should edit principle", async () => {
       const newPrinciple = "principle2";
       await constitution.updatePrinciple(1, newPrinciple);
@@ -34,7 +41,7 @@ describe("Constitution Contract", async () => {
     });
   });
 
-  describe.only("Constitution Strategies", async () => {
+  describe("Constitution Strategies", async () => {
     const strategy = "strategy1";
     beforeEach(async () => {
       await constitution.addStrategy(strategy);
@@ -42,6 +49,13 @@ describe("Constitution Contract", async () => {
 
     it("should add new strategy", async () => {
       expect(await constitution.getStrategy(1)).to.equal(strategy);
+    });
+
+    it("should add 2 new strategy", async () => {
+      await constitution.addStrategy("new one 2");
+      await constitution.addStrategy("new one");
+
+      expect(await constitution.getStrategies()).to.have.lengthOf(3);
     });
 
     it("should edit strategy", async () => {

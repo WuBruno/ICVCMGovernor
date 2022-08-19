@@ -112,7 +112,26 @@ describe("Proposal Integration Tests", async () => {
       ).to.equal(1);
     });
 
-    it("should reject proposal when adding the member to the same role");
+    it("should reject proposal when adding the member to the same role", async () => {
+      const description = "Adding new director";
+      const name = ethers.utils.formatBytes32String("Director");
+      const addMemberCall = roles.interface.encodeFunctionData("addMember", [
+        owner.address,
+        Roles.Director,
+        name,
+      ]);
+
+      expect(
+        createAndPassProposal(
+          governor.connect(owner),
+          roles.address,
+          addMemberCall,
+          description,
+          [owner, user2],
+          regulator
+        )
+      ).to.revertedWith("Member already exists");
+    });
 
     it("should pass remove member proposal", async () => {
       const description = "Remove director";
