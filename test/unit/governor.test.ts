@@ -3,13 +3,19 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import * as dotenv from "dotenv";
 import { BigNumberish } from "ethers";
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 import { ProposalState, Roles } from "~/@types";
 import { deployContracts } from "~/services/deployment";
-import { ICVCMConstitution, ICVCMGovernor, ICVCMRoles } from "~/typechain";
+import {
+  ICVCMConstitution,
+  ICVCMGovernor,
+  ICVCMRoles,
+  ICVCMToken,
+} from "~/typechain";
 import {
   addMember,
   cancelProposal,
+  createAndPassProposal,
   createProposal,
   executeProposal,
   voteProposal,
@@ -18,6 +24,7 @@ dotenv.config();
 
 describe("Governor Contract", async () => {
   let governor: ICVCMGovernor;
+  let token: ICVCMToken;
   let constitution: ICVCMConstitution;
   let roles: ICVCMRoles;
   let director1: SignerWithAddress;
@@ -36,7 +43,7 @@ describe("Governor Contract", async () => {
     [director1, director2, regulator, secretariat, expert, user] =
       await ethers.getSigners();
 
-    [, governor, roles, constitution] = await deployContracts(
+    [token, governor, roles, constitution] = await deployContracts(
       async (_roles) => {
         await addMember(_roles, director1.address, Roles.Director, "director1");
         await addMember(_roles, director2.address, Roles.Director, "director2");
@@ -291,5 +298,27 @@ describe("Governor Contract", async () => {
         "Proposal not cancelled"
       ).to.equal(ProposalState.Canceled);
     });
+  });
+
+  it("should upgrade successfully", async () => {
+    expect(await governor.getVersion()).to.equal(1);
+
+    const Contract = await ethers.getContractFactory("ICVCMGovernor");
+    const impl = await upgrades.deployImplementation(Contract);
+
+    const call = governor.interface.encodeFunctionData("upgradeTo", [
+      impl.toString(),
+    ]);
+
+    await createAndPassProposal(
+      governor,
+      governor.address,
+      call,
+      "upgradeTo",
+      [director1, director2],
+      regulator
+    );
+
+    expect(await governor.getVersion()).to.equal(2);
   });
 });

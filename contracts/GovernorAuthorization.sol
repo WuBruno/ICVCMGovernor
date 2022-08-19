@@ -2,10 +2,13 @@
 pragma solidity ^0.8.9;
 import "./ICVCMRoles.sol";
 
-abstract contract ICVCMGovernorAuthorization {
+abstract contract GovernorAuthorization is Initializable {
     ICVCMRoles private _roles;
 
-    constructor(ICVCMRoles roles) {
+    function __GovernorAuthorization_init(ICVCMRoles roles)
+        internal
+        onlyInitializing
+    {
         _roles = roles;
     }
 

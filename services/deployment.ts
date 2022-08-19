@@ -18,8 +18,11 @@ export const deployICVCMGovernor = async (
   roleAddress: string
 ) => {
   const contractFactory = await ethers.getContractFactory("ICVCMGovernor");
-  const contract = await contractFactory.deploy(tokenAddress, roleAddress);
-  return contract.deployed();
+  const contract = await upgrades.deployProxy(contractFactory, [
+    tokenAddress,
+    roleAddress,
+  ]);
+  return contract.deployed() as Promise<ICVCMGovernor>;
 };
 
 export const deployICVCMRoles = async (tokenAddress: string) => {
@@ -59,6 +62,10 @@ export async function deployContracts(
       constitution.address,
       governor.address,
       governor.address,
+      governor.address,
+      governor.address,
+      governor.address,
+      governor.address,
     ],
     [
       roles.interface.getSighash("addMember"),
@@ -69,6 +76,10 @@ export async function deployContracts(
       constitution.interface.getSighash("setPrinciples"),
       constitution.interface.getSighash("setStrategies"),
       constitution.interface.getSighash("setStrategies"),
+      governor.interface.getSighash("updateQuorumNumerator"),
+      governor.interface.getSighash("setVotingPeriod"),
+      governor.interface.getSighash("upgradeTo"),
+      governor.interface.getSighash("upgradeTo"),
       governor.interface.getSighash("updateQuorumNumerator"),
       governor.interface.getSighash("setVotingPeriod"),
     ],
@@ -83,6 +94,10 @@ export async function deployContracts(
       Roles.Secretariat,
       Roles.Director,
       Roles.Director,
+      Roles.Director,
+      Roles.Secretariat,
+      Roles.Secretariat,
+      Roles.Secretariat,
     ]
   );
 

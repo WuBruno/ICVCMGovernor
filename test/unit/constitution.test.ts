@@ -15,13 +15,16 @@ describe("Constitution Contract", async () => {
     const principle2 = "This is a important CCP to get through";
 
     await constitution.setPrinciples(principle);
-    expect(await constitution.getPrinciples(), "Failed to set principle");
+    expect(
+      await constitution.getPrinciples(),
+      "Failed to set principle"
+    ).to.equal(principle);
 
     await constitution.setPrinciples(principle2);
     expect(
       await constitution.getPrinciples(),
       "Failed to set second principle"
-    );
+    ).to.equal(principle2);
   });
 
   it("should set strategies", async () => {

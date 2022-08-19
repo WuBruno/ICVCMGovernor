@@ -158,7 +158,7 @@ describe("Proposal Integration Tests", async () => {
       );
 
       expect(
-        await governor.quorumNumerator(),
+        await governor["quorumNumerator()"](),
         "Voting quorum should have updated"
       ).to.equal(newQuorum);
     });

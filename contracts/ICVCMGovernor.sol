@@ -1,40 +1,61 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/governance/Governor.sol";
-import "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
-import "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
-import "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
-import "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
-import "./ICVCMRoles.sol";
-import "./ICVCMGovernorAuthorization.sol";
+import "@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorSettingsUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorCountingSimpleUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorVotesUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorVotesQuorumFractionUpgradeable.sol";
 
-// block time
+import "./ICVCMRoles.sol";
+import "./GovernorAuthorization.sol";
+import "./Upgradable.sol";
+
 contract ICVCMGovernor is
-    Governor,
-    GovernorSettings,
-    GovernorCountingSimple,
-    GovernorVotes,
-    GovernorVotesQuorumFraction,
-    ICVCMGovernorAuthorization
+    Upgradable,
+    GovernorUpgradeable,
+    GovernorSettingsUpgradeable,
+    GovernorCountingSimpleUpgradeable,
+    GovernorVotesUpgradeable,
+    GovernorVotesQuorumFractionUpgradeable,
+    GovernorAuthorization
 {
-    constructor(IVotes _token, ICVCMRoles _roles)
-        Governor("ICVCMGovernor")
-        GovernorSettings(
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    function initialize(IVotesUpgradeable _token, ICVCMRoles _roles)
+        public
+        initializer
+    {
+        __Upgradeable_init();
+        __Governor_init("ICVCMGovernor");
+        __GovernorSettings_init(
             0, /* 0 block */
-            45818, /* 1 week, 13.2 s/block */
+            45818, /* 1 week */
             0
-        )
-        GovernorVotes(_token)
-        GovernorVotesQuorumFraction(50)
-        ICVCMGovernorAuthorization(_roles)
-    {}
+        );
+        __GovernorCountingSimple_init();
+        __GovernorVotes_init(_token);
+        __GovernorVotesQuorumFraction_init(50);
+        __GovernorAuthorization_init(_roles);
+    }
+
+    function _authorizeUpgrade(address implementationAddress)
+        internal
+        virtual
+        override
+        onlyGovernance
+    {
+        super._authorizeUpgrade(implementationAddress);
+    }
 
     function COUNTING_MODE()
         public
         pure
         virtual
-        override(IGovernor, GovernorCountingSimple)
+        override(IGovernorUpgradeable, GovernorCountingSimpleUpgradeable)
         returns (string memory)
     {
         return "support=bravo&quorum=against,for,abstain";
@@ -45,7 +66,7 @@ contract ICVCMGovernor is
         internal
         view
         virtual
-        override(Governor, GovernorCountingSimple)
+        override(GovernorUpgradeable, GovernorCountingSimpleUpgradeable)
         returns (bool)
     {
         (
@@ -97,7 +118,7 @@ contract ICVCMGovernor is
         internal
         view
         virtual
-        override(Governor, GovernorCountingSimple)
+        override(GovernorUpgradeable, GovernorCountingSimpleUpgradeable)
         returns (bool)
     {
         (uint256 againstVotes, uint256 forVotes, ) = proposalVotes(proposalId);
@@ -108,7 +129,7 @@ contract ICVCMGovernor is
     function votingDelay()
         public
         view
-        override(IGovernor, GovernorSettings)
+        override(IGovernorUpgradeable, GovernorSettingsUpgradeable)
         returns (uint256)
     {
         return super.votingDelay();
@@ -117,7 +138,7 @@ contract ICVCMGovernor is
     function votingPeriod()
         public
         view
-        override(IGovernor, GovernorSettings)
+        override(IGovernorUpgradeable, GovernorSettingsUpgradeable)
         returns (uint256)
     {
         return super.votingPeriod();
@@ -126,7 +147,7 @@ contract ICVCMGovernor is
     function quorum(uint256 blockNumber)
         public
         view
-        override(IGovernor, GovernorVotesQuorumFraction)
+        override(IGovernorUpgradeable, GovernorVotesQuorumFractionUpgradeable)
         returns (uint256)
     {
         return super.quorum(blockNumber);
@@ -135,7 +156,7 @@ contract ICVCMGovernor is
     function proposalThreshold()
         public
         view
-        override(Governor, GovernorSettings)
+        override(GovernorUpgradeable, GovernorSettingsUpgradeable)
         returns (uint256)
     {
         return super.proposalThreshold();

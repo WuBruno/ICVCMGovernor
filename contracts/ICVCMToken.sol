@@ -38,6 +38,7 @@ contract ICVCMToken is
         __EIP712_init("ICVCMToken", "1");
         __ERC721Votes_init();
         __UUPSUpgradeable_init();
+        __Upgradeable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }

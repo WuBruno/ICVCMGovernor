@@ -1,8 +1,8 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 import { Roles } from "~/@types";
-import { deployContracts } from "~/services/deployment";
+import { deployContracts, deployICVCMToken } from "~/services/deployment";
 import { ICVCMRoles, ICVCMToken } from "~/typechain";
 import { addMember } from "../helper";
 
@@ -35,5 +35,18 @@ describe("Token Contract", async () => {
     expect(governorToken.delegate(user2.address)).to.be.revertedWith(
       "disabled"
     );
+  });
+
+  it("should upgrade successfully", async () => {
+    const token: ICVCMToken = await deployICVCMToken();
+    expect(await governorToken.getVersion()).to.equal(1);
+
+    const Contract = await ethers.getContractFactory("ICVCMToken");
+    const token2 = (await upgrades.upgradeProxy(
+      token.address,
+      Contract
+    )) as ICVCMToken;
+
+    expect(await token2.getVersion()).to.equal(2);
   });
 });
