@@ -49,56 +49,120 @@ export async function deployContracts(
     roles.address
   );
 
+  const authorizations = [
+    [roles.address, roles.interface.getSighash("addMember"), Roles.Director],
+    [roles.address, roles.interface.getSighash("removeMember"), Roles.Director],
+    [
+      constitution.address,
+      constitution.interface.getSighash("addPrinciple"),
+      Roles.Director,
+    ],
+    [
+      constitution.address,
+      constitution.interface.getSighash("addPrinciple"),
+      Roles.Expert,
+    ],
+    [
+      constitution.address,
+      constitution.interface.getSighash("updatePrinciple"),
+      Roles.Director,
+    ],
+    [
+      constitution.address,
+      constitution.interface.getSighash("updatePrinciple"),
+      Roles.Expert,
+    ],
+    [
+      constitution.address,
+      constitution.interface.getSighash("removePrinciple"),
+      Roles.Director,
+    ],
+    [
+      constitution.address,
+      constitution.interface.getSighash("removePrinciple"),
+      Roles.Expert,
+    ],
+    [
+      constitution.address,
+      constitution.interface.getSighash("addStrategy"),
+      Roles.Director,
+    ],
+    [
+      constitution.address,
+      constitution.interface.getSighash("addStrategy"),
+      Roles.Secretariat,
+    ],
+    [
+      constitution.address,
+      constitution.interface.getSighash("updateStrategy"),
+      Roles.Director,
+    ],
+    [
+      constitution.address,
+      constitution.interface.getSighash("updateStrategy"),
+      Roles.Expert,
+    ],
+    [
+      constitution.address,
+      constitution.interface.getSighash("removeStrategy"),
+      Roles.Director,
+    ],
+    [
+      constitution.address,
+      constitution.interface.getSighash("removeStrategy"),
+      Roles.Expert,
+    ],
+    [
+      governor.address,
+      governor.interface.getSighash("updateQuorumNumerator"),
+      Roles.Director,
+    ],
+    [
+      governor.address,
+      governor.interface.getSighash("updateQuorumNumerator"),
+      Roles.Secretariat,
+    ],
+    [
+      governor.address,
+      governor.interface.getSighash("setVotingPeriod"),
+      Roles.Director,
+    ],
+    [
+      governor.address,
+      governor.interface.getSighash("setVotingPeriod"),
+      Roles.Secretariat,
+    ],
+    [
+      governor.address,
+      governor.interface.getSighash("upgradeTo"),
+      Roles.Director,
+    ],
+    [
+      governor.address,
+      governor.interface.getSighash("upgradeTo"),
+      Roles.Secretariat,
+    ],
+    [roles.address, roles.interface.getSighash("upgradeTo"), Roles.Director],
+    [roles.address, roles.interface.getSighash("upgradeTo"), Roles.Secretariat],
+    [token.address, token.interface.getSighash("upgradeTo"), Roles.Director],
+    [token.address, token.interface.getSighash("upgradeTo"), Roles.Secretariat],
+    [
+      constitution.address,
+      constitution.interface.getSighash("upgradeTo"),
+      Roles.Director,
+    ],
+    [
+      constitution.address,
+      constitution.interface.getSighash("upgradeTo"),
+      Roles.Secretariat,
+    ],
+  ] as const;
+
   // Assign authorization of contracts
   await roles.batchAddProposalAuthorization(
-    [
-      roles.address,
-      roles.address,
-      roles.address,
-      roles.address,
-      constitution.address,
-      constitution.address,
-      constitution.address,
-      constitution.address,
-      governor.address,
-      governor.address,
-      governor.address,
-      governor.address,
-      governor.address,
-      governor.address,
-    ],
-    [
-      roles.interface.getSighash("addMember"),
-      roles.interface.getSighash("removeMember"),
-      roles.interface.getSighash("addProposalAuthorization"),
-      roles.interface.getSighash("removeProposalAuthorization"),
-      constitution.interface.getSighash("setPrinciples"),
-      constitution.interface.getSighash("setPrinciples"),
-      constitution.interface.getSighash("setStrategies"),
-      constitution.interface.getSighash("setStrategies"),
-      governor.interface.getSighash("updateQuorumNumerator"),
-      governor.interface.getSighash("setVotingPeriod"),
-      governor.interface.getSighash("upgradeTo"),
-      governor.interface.getSighash("upgradeTo"),
-      governor.interface.getSighash("updateQuorumNumerator"),
-      governor.interface.getSighash("setVotingPeriod"),
-    ],
-    [
-      Roles.Director,
-      Roles.Director,
-      Roles.Director,
-      Roles.Director,
-      Roles.Director,
-      Roles.Expert,
-      Roles.Director,
-      Roles.Secretariat,
-      Roles.Director,
-      Roles.Director,
-      Roles.Director,
-      Roles.Secretariat,
-      Roles.Secretariat,
-      Roles.Secretariat,
-    ]
+    authorizations.map((v) => v[0]),
+    authorizations.map((v) => v[1]),
+    authorizations.map((v) => v[2])
   );
 
   // Assign token contract ownership to roles contract

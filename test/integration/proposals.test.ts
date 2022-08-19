@@ -45,7 +45,7 @@ describe("Proposal Integration Tests", async () => {
     it("should pass a strategy proposal", async () => {
       const newStrategy = "The best strategy";
       const setProposalCall = constitution.interface.encodeFunctionData(
-        "setStrategies",
+        "addStrategy",
         [newStrategy]
       );
 
@@ -60,13 +60,13 @@ describe("Proposal Integration Tests", async () => {
         regulator
       );
 
-      expect(await constitution.getStrategies()).equal(newStrategy);
+      expect(await constitution.getStrategy(1)).to.equal(newStrategy);
     });
 
     it("should pass a principle proposal", async () => {
       const newPrinciple = "The best principle 2";
       const setPrincipleCall = constitution.interface.encodeFunctionData(
-        "setPrinciples",
+        "addPrinciple",
         [newPrinciple]
       );
 
@@ -81,7 +81,7 @@ describe("Proposal Integration Tests", async () => {
         regulator
       );
 
-      expect(await constitution.getPrinciples()).equal(newPrinciple);
+      expect(await constitution.getPrinciple(1)).to.equal(newPrinciple);
     });
 
     it("should pass adding director proposal", async () => {

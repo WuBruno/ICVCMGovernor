@@ -1,8 +1,8 @@
-diff --git a/node_modules/@openzeppelin/contracts/governance/IGovernor.sol b/node_modules/@openzeppelin/contracts/governance/IGovernor.sol
-index 8b21d29..fd6d35f 100644
---- a/node_modules/@openzeppelin/contracts/governance/IGovernor.sol
-+++ b/node_modules/@openzeppelin/contracts/governance/IGovernor.sol
-@@ -26,7 +26,7 @@ abstract contract IGovernor is IERC165 {
+diff --git a/node_modules/@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol b/node_modules/@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol
+index 0f84c32..ad5604a 100644
+--- a/node_modules/@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol
++++ b/node_modules/@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol
+@@ -32,7 +32,7 @@ abstract contract IGovernorUpgradeable is Initializable, IERC165Upgradeable {
       * @dev Emitted when a proposal is created.
       */
      event ProposalCreated(
@@ -11,7 +11,7 @@ index 8b21d29..fd6d35f 100644
          address proposer,
          address[] targets,
          uint256[] values,
-@@ -40,19 +40,19 @@ abstract contract IGovernor is IERC165 {
+@@ -46,19 +46,19 @@ abstract contract IGovernorUpgradeable is Initializable, IERC165Upgradeable {
      /**
       * @dev Emitted when a proposal is canceled.
       */

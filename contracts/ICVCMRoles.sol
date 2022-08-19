@@ -211,7 +211,7 @@ contract ICVCMRoles is OwnableUpgradeable, Upgradable {
     function getMembers() public view returns (MemberOutput[] memory) {
         uint256 memberCount = _memberSet.length();
         MemberOutput[] memory members = new MemberOutput[](memberCount);
-        for (uint256 i = 0; i < memberCount; i++) {
+        for (uint256 i = 0; i < memberCount; ++i) {
             address memberAddress = _memberSet.at(i);
             Member memory member = _members[memberAddress];
             members[i] = MemberOutput(member.role, member.name, memberAddress);
