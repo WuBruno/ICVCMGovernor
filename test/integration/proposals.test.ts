@@ -21,9 +21,12 @@ describe("Proposal Integration Tests", async () => {
   let user2: SignerWithAddress;
   let user3: SignerWithAddress;
   let regulator: SignerWithAddress;
+  let expert: SignerWithAddress;
+  let secretariat: SignerWithAddress;
 
   beforeEach(async () => {
-    [owner, user2, user3, regulator] = await ethers.getSigners();
+    [owner, user2, user3, regulator, expert, secretariat] =
+      await ethers.getSigners();
 
     [token, governor, roles, constitution] = await deployContracts(
       async (_roles) => {
@@ -34,6 +37,13 @@ describe("Proposal Integration Tests", async () => {
           regulator.address,
           Roles.Regulator,
           "regulator1"
+        );
+        await addMember(_roles, expert.address, Roles.Expert, "expert1");
+        await addMember(
+          _roles,
+          secretariat.address,
+          Roles.Secretariat,
+          "secretariat"
         );
       }
     );
@@ -52,7 +62,7 @@ describe("Proposal Integration Tests", async () => {
       const description = "New strategy proposal";
 
       await createAndPassProposal(
-        governor.connect(owner),
+        governor.connect(secretariat),
         constitution.address,
         setProposalCall,
         description,
@@ -73,7 +83,7 @@ describe("Proposal Integration Tests", async () => {
       const description = "New principle proposal";
 
       await createAndPassProposal(
-        governor,
+        governor.connect(expert),
         constitution.address,
         setPrincipleCall,
         description,
@@ -141,7 +151,7 @@ describe("Proposal Integration Tests", async () => {
       );
 
       await createAndPassProposal(
-        governor,
+        governor.connect(owner),
         roles.address,
         removeMemberCall,
         description,
@@ -168,7 +178,7 @@ describe("Proposal Integration Tests", async () => {
       );
 
       await createAndPassProposal(
-        governor,
+        governor.connect(secretariat),
         governor.address,
         updateQuorumCall,
         description,
@@ -191,7 +201,7 @@ describe("Proposal Integration Tests", async () => {
       );
 
       await createAndPassProposal(
-        governor,
+        governor.connect(secretariat),
         governor.address,
         updateQuorumCall,
         description,

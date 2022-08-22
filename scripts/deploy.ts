@@ -22,20 +22,12 @@ async function main() {
   const [ICVCMToken, ICVCMGovernor, ICVCMRoles, ICVCMConstitution] =
     await deployContracts(async (roles) => {
       // Mint Tokens -- only set first 2 as directors
-      for (const [index, account] of accounts.slice(0, 2).entries()) {
-        await addMember(
-          roles,
-          account.address,
-          Roles.Director,
-          `Director${index + 1}`
-        );
-      }
-      await addMember(
-        roles,
-        accounts[2].address,
-        Roles.Regulator,
-        "Regulator1"
-      );
+      await addMember(roles, accounts[0].address, Roles.Director, `David`);
+      await addMember(roles, accounts[1].address, Roles.Director, `Daniel`);
+      await addMember(roles, accounts[2].address, Roles.Director, `Daisy`);
+      await addMember(roles, accounts[3].address, Roles.Expert, "Eva");
+      await addMember(roles, accounts[4].address, Roles.Secretariat, "Sophia");
+      await addMember(roles, accounts[5].address, Roles.Regulator, "Riley");
     });
 
   console.log("ICVCMToken deployed to:", ICVCMToken.address);

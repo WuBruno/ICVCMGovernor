@@ -22,7 +22,7 @@ index eec8e9b..501fed8 100644
          return proposalId;
      }
 diff --git a/node_modules/@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol b/node_modules/@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol
-index 0f84c32..59225a2 100644
+index 0f84c32..f6b10e9 100644
 --- a/node_modules/@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol
 +++ b/node_modules/@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol
 @@ -32,7 +32,7 @@ abstract contract IGovernorUpgradeable is Initializable, IERC165Upgradeable {
@@ -34,16 +34,21 @@ index 0f84c32..59225a2 100644
          address proposer,
          address[] targets,
          uint256[] values,
-@@ -46,7 +46,7 @@ abstract contract IGovernorUpgradeable is Initializable, IERC165Upgradeable {
+@@ -46,19 +46,19 @@ abstract contract IGovernorUpgradeable is Initializable, IERC165Upgradeable {
      /**
       * @dev Emitted when a proposal is canceled.
       */
 -    event ProposalCanceled(uint256 proposalId);
-+    event ProposalCanceled(uint256 proposalId, string reason);
++    event ProposalCanceled(uint256 indexed proposalId, string reason);
  
      /**
       * @dev Emitted when a proposal is executed.
-@@ -58,7 +58,7 @@ abstract contract IGovernorUpgradeable is Initializable, IERC165Upgradeable {
+      */
+-    event ProposalExecuted(uint256 proposalId);
++    event ProposalExecuted(uint256 indexed proposalId);
+ 
+     /**
+      * @dev Emitted when a vote is cast without params.
       *
       * Note: `support` values should be seen as buckets. Their interpretation depends on the voting module used.
       */

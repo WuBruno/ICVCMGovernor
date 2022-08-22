@@ -69,7 +69,7 @@ describe("Governor Contract", async () => {
       ["hello world"]
     );
     proposalId = await createProposal(
-      governor,
+      governor.connect(expert),
       constitution.address,
       encodedFunctionCall,
       proposalDescription
@@ -102,7 +102,7 @@ describe("Governor Contract", async () => {
           "AddMember Proposal"
         );
       };
-      it("should allow director to create add member proposal", async () =>
+      it("should prevent director from creating add member proposal", async () =>
         addMemberProposal(director1));
       it("should prevent expert from creating add member proposal", async () =>
         expect(addMemberProposal(expert)).to.revertedWith("Unauthorized"));
@@ -127,7 +127,7 @@ describe("Governor Contract", async () => {
           "RemoveMember Proposal"
         );
       };
-      it("should allow director to create remove member proposal", async () =>
+      it("should prevent director from creating remove member proposal", async () =>
         removeMemberProposal(director1));
       it("should prevent expert from creating remove member proposal", async () =>
         expect(removeMemberProposal(expert)).to.revertedWith("Unauthorized"));
@@ -156,8 +156,10 @@ describe("Governor Contract", async () => {
           "AddPrinciples Proposal"
         );
       };
-      it("should allow directors to create add principle proposal", async () =>
-        addPrinciplesProposal(director1));
+      it("should prevent director from creating add principle proposal", async () =>
+        expect(addPrinciplesProposal(director1)).to.revertedWith(
+          "Unauthorized"
+        ));
       it("should allow expert to create add principle proposal", async () =>
         addPrinciplesProposal(expert));
       it("should prevent secretariat from creating add principle proposal", async () =>
@@ -175,7 +177,7 @@ describe("Governor Contract", async () => {
     });
 
     describe("Update Principle Proposal Authorization", () => {
-      const UpdatePrincipleProposal = async (member: SignerWithAddress) => {
+      const updatePrincipleProposal = async (member: SignerWithAddress) => {
         const encodedFunctionCall = constitution.interface.encodeFunctionData(
           "updatePrinciple",
           [1, "New principles"]
@@ -187,26 +189,28 @@ describe("Governor Contract", async () => {
           "UpdatePrinciple Proposal"
         );
       };
-      it("should allow directors to create update principle proposal", async () =>
-        UpdatePrincipleProposal(director1));
+      it("should prevent director from creating update principle proposal", async () =>
+        expect(updatePrincipleProposal(director1)).to.revertedWith(
+          "Unauthorized"
+        ));
       it("should allow expert to create update principle proposal", async () =>
-        UpdatePrincipleProposal(expert));
+        updatePrincipleProposal(expert));
       it("should prevent secretariat from creating update principle proposal", async () =>
-        expect(UpdatePrincipleProposal(secretariat)).to.revertedWith(
+        expect(updatePrincipleProposal(secretariat)).to.revertedWith(
           "Unauthorized"
         ));
       it("should prevent regulator from creating update principle proposal", async () =>
-        expect(UpdatePrincipleProposal(regulator)).to.revertedWith(
+        expect(updatePrincipleProposal(regulator)).to.revertedWith(
           "Unauthorized"
         ));
       it("should prevent non-member from creating update principle proposal", async () =>
-        expect(UpdatePrincipleProposal(user)).to.revertedWith(
+        expect(updatePrincipleProposal(user)).to.revertedWith(
           "Member not found"
         ));
     });
 
     describe("Remove Principle Proposal Authorization", () => {
-      const RemovePrincipleProposal = async (member: SignerWithAddress) => {
+      const removePrincipleProposal = async (member: SignerWithAddress) => {
         const encodedFunctionCall = constitution.interface.encodeFunctionData(
           "removePrinciple",
           [1]
@@ -218,20 +222,22 @@ describe("Governor Contract", async () => {
           "RemovePrinciple Proposal"
         );
       };
-      it("should allow directors to create remove principle proposal", async () =>
-        RemovePrincipleProposal(director1));
+      it("should prevent director from creating remove principle proposal", async () =>
+        expect(removePrincipleProposal(director1)).to.revertedWith(
+          "Unauthorized"
+        ));
       it("should allow expert to create remove principle proposal", async () =>
-        RemovePrincipleProposal(expert));
+        removePrincipleProposal(expert));
       it("should prevent secretariat from creating remove principle proposal", async () =>
-        expect(RemovePrincipleProposal(secretariat)).to.revertedWith(
+        expect(removePrincipleProposal(secretariat)).to.revertedWith(
           "Unauthorized"
         ));
       it("should prevent regulator from creating remove principle proposal", async () =>
-        expect(RemovePrincipleProposal(regulator)).to.revertedWith(
+        expect(removePrincipleProposal(regulator)).to.revertedWith(
           "Unauthorized"
         ));
       it("should prevent non-member from creating remove principle proposal", async () =>
-        expect(RemovePrincipleProposal(user)).to.revertedWith(
+        expect(removePrincipleProposal(user)).to.revertedWith(
           "Member not found"
         ));
     });
@@ -249,8 +255,8 @@ describe("Governor Contract", async () => {
           "AddStrategies Proposal"
         );
       };
-      it("should allow directors to create add strategy proposal", async () =>
-        addStrategyProposal(director1));
+      it("should prevent director from creating add strategy proposal", async () =>
+        expect(addStrategyProposal(director1)).to.revertedWith("Unauthorized"));
       it("should allow secretariat to create add strategy proposal", async () =>
         addStrategyProposal(secretariat));
       it("should prevent expert from creating add strategy proposal", async () =>
@@ -274,8 +280,10 @@ describe("Governor Contract", async () => {
           "UpdateStrategy Proposal"
         );
       };
-      it("should allow directors to create update strategy proposal", async () =>
-        updateStrategyProposal(director1));
+      it("should prevent director from creating update strategy proposal", async () =>
+        expect(updateStrategyProposal(director1)).to.revertedWith(
+          "Unauthorized"
+        ));
       it("should allow secretariat to create update strategy proposal", async () =>
         updateStrategyProposal(secretariat));
       it("should prevent expert from creating update strategy proposal", async () =>
@@ -303,8 +311,10 @@ describe("Governor Contract", async () => {
           "RemoveStrategy Proposal"
         );
       };
-      it("should allow directors to create remove strategy proposal", async () =>
-        removeStrategyProposal(director1));
+      it("should prevent director from creating remove strategy proposal", async () =>
+        expect(removeStrategyProposal(director1)).to.revertedWith(
+          "Unauthorized"
+        ));
       it("should allow secretariat to create remove strategy proposal", async () =>
         removeStrategyProposal(secretariat));
       it("should prevent expert from creating remove strategy proposal", async () =>
@@ -332,8 +342,10 @@ describe("Governor Contract", async () => {
           "UpdateQuorum Proposal"
         );
       };
-      it("should allow directors to create update quorum proposal", async () =>
-        updateQuorumProposal(director1));
+      it("should prevent director from creating update quorum proposal", async () =>
+        expect(updateQuorumProposal(director1)).to.revertedWith(
+          "Unauthorized"
+        ));
       it("should allow expert to create update quorum proposal", async () =>
         expect(updateQuorumProposal(expert)).to.revertedWith("Unauthorized"));
       it("should prevent secretariat from creating update quorum proposal", async () =>
@@ -359,8 +371,10 @@ describe("Governor Contract", async () => {
           "Update Voting Period Proposal"
         );
       };
-      it("should allow directors to create voting period proposal", async () =>
-        votingPeriodProposal(director1));
+      it("should prevent director from creating voting period proposal", async () =>
+        expect(votingPeriodProposal(director1)).to.revertedWith(
+          "Unauthorized"
+        ));
       it("should allow expert to create voting period proposal", async () =>
         expect(votingPeriodProposal(expert)).to.revertedWith("Unauthorized"));
       it("should prevent secretariat from creating voting period proposal", async () =>
@@ -386,13 +400,15 @@ describe("Governor Contract", async () => {
           "UpgradeContract Proposal"
         );
       };
-      it("should allow directors to create upgrade contract proposal", async () =>
-        upgradeContractProposal(director1));
-      it("should allow expert to create upgrade contract proposal", async () =>
+      it("should prevent director from creating upgrade contract proposal", async () =>
+        expect(upgradeContractProposal(director1)).to.revertedWith(
+          "Unauthorized"
+        ));
+      it("should prevent expert from creating upgrade contract proposal", async () =>
         expect(upgradeContractProposal(expert)).to.revertedWith(
           "Unauthorized"
         ));
-      it("should prevent secretariat from creating upgrade contract proposal", async () =>
+      it("should allow secretariat to create upgrade contract proposal", async () =>
         upgradeContractProposal(secretariat));
       it("should prevent regulator from creating upgrade contract proposal", async () =>
         expect(upgradeContractProposal(regulator)).to.revertedWith(
@@ -417,15 +433,17 @@ describe("Governor Contract", async () => {
           "UpgradeGovernor Proposal"
         );
       };
-      it("should allow directors to create upgrade governor proposal", async () =>
-        upgradeContractProposal(director1));
-      it("should allow expert to create upgrade governor proposal", async () =>
+      it("should prevent director from creating upgrade contract proposal", async () =>
+        expect(upgradeContractProposal(director1)).to.revertedWith(
+          "Unauthorized"
+        ));
+      it("should prevent expert from creating upgrade contract proposal", async () =>
         expect(upgradeContractProposal(expert)).to.revertedWith(
           "Unauthorized"
         ));
-      it("should prevent secretariat from creating upgrade governor proposal", async () =>
+      it("should allow secretariat to create upgrade contract proposal", async () =>
         upgradeContractProposal(secretariat));
-      it("should prevent regulator from creating upgrade governor proposal", async () =>
+      it("should prevent regulator from creating upgrade contract proposal", async () =>
         expect(upgradeContractProposal(regulator)).to.revertedWith(
           "Unauthorized"
         ));
@@ -448,15 +466,17 @@ describe("Governor Contract", async () => {
           "Upgrade Tokens Proposal"
         );
       };
-      it("should allow directors to create upgrade tokens proposal", async () =>
-        upgradeContractProposal(director1));
-      it("should allow expert to create upgrade tokens proposal", async () =>
+      it("should prevent director from creating upgrade contract proposal", async () =>
+        expect(upgradeContractProposal(director1)).to.revertedWith(
+          "Unauthorized"
+        ));
+      it("should prevent expert from creating upgrade contract proposal", async () =>
         expect(upgradeContractProposal(expert)).to.revertedWith(
           "Unauthorized"
         ));
-      it("should prevent secretariat from creating upgrade tokens proposal", async () =>
+      it("should allow secretariat to create upgrade contract proposal", async () =>
         upgradeContractProposal(secretariat));
-      it("should prevent regulator from creating upgrade tokens proposal", async () =>
+      it("should prevent regulator from creating upgrade contract proposal", async () =>
         expect(upgradeContractProposal(regulator)).to.revertedWith(
           "Unauthorized"
         ));
@@ -479,15 +499,17 @@ describe("Governor Contract", async () => {
           "Upgrade Constitution Proposal"
         );
       };
-      it("should allow directors to create upgrade constitution proposal", async () =>
-        upgradeContractProposal(director1));
-      it("should allow expert to create upgrade constitution proposal", async () =>
+      it("should prevent director from creating upgrade contract proposal", async () =>
+        expect(upgradeContractProposal(director1)).to.revertedWith(
+          "Unauthorized"
+        ));
+      it("should prevent expert from creating upgrade contract proposal", async () =>
         expect(upgradeContractProposal(expert)).to.revertedWith(
           "Unauthorized"
         ));
-      it("should prevent secretariat from creating upgrade constitution proposal", async () =>
+      it("should allow secretariat to create upgrade contract proposal", async () =>
         upgradeContractProposal(secretariat));
-      it("should prevent regulator from creating upgrade constitution proposal", async () =>
+      it("should prevent regulator from creating upgrade contract proposal", async () =>
         expect(upgradeContractProposal(regulator)).to.revertedWith(
           "Unauthorized"
         ));
@@ -644,7 +666,7 @@ describe("Governor Contract", async () => {
     ]);
 
     await createAndPassProposal(
-      governor,
+      governor.connect(secretariat),
       governor.address,
       call,
       "upgradeTo",

@@ -55,17 +55,7 @@ export async function deployContracts(
     [
       constitution.address,
       constitution.interface.getSighash("addPrinciple"),
-      Roles.Director,
-    ],
-    [
-      constitution.address,
-      constitution.interface.getSighash("addPrinciple"),
       Roles.Expert,
-    ],
-    [
-      constitution.address,
-      constitution.interface.getSighash("updatePrinciple"),
-      Roles.Director,
     ],
     [
       constitution.address,
@@ -75,27 +65,12 @@ export async function deployContracts(
     [
       constitution.address,
       constitution.interface.getSighash("removePrinciple"),
-      Roles.Director,
-    ],
-    [
-      constitution.address,
-      constitution.interface.getSighash("removePrinciple"),
       Roles.Expert,
     ],
     [
       constitution.address,
       constitution.interface.getSighash("addStrategy"),
-      Roles.Director,
-    ],
-    [
-      constitution.address,
-      constitution.interface.getSighash("addStrategy"),
       Roles.Secretariat,
-    ],
-    [
-      constitution.address,
-      constitution.interface.getSighash("updateStrategy"),
-      Roles.Director,
     ],
     [
       constitution.address,
@@ -105,17 +80,7 @@ export async function deployContracts(
     [
       constitution.address,
       constitution.interface.getSighash("removeStrategy"),
-      Roles.Director,
-    ],
-    [
-      constitution.address,
-      constitution.interface.getSighash("removeStrategy"),
       Roles.Secretariat,
-    ],
-    [
-      governor.address,
-      governor.interface.getSighash("updateQuorumNumerator"),
-      Roles.Director,
     ],
     [
       governor.address,
@@ -125,17 +90,7 @@ export async function deployContracts(
     [
       governor.address,
       governor.interface.getSighash("setVotingPeriod"),
-      Roles.Director,
-    ],
-    [
-      governor.address,
-      governor.interface.getSighash("setVotingPeriod"),
       Roles.Secretariat,
-    ],
-    [
-      governor.address,
-      governor.interface.getSighash("upgradeTo"),
-      Roles.Director,
     ],
     [
       governor.address,
@@ -145,32 +100,15 @@ export async function deployContracts(
     [
       roles.address,
       roles.interface.getSighash("addProposalAuthorization"),
-      Roles.Director,
-    ],
-    [
-      roles.address,
-      roles.interface.getSighash("addProposalAuthorization"),
       Roles.Secretariat,
-    ],
-    [
-      roles.address,
-      roles.interface.getSighash("removeProposalAuthorization"),
-      Roles.Director,
     ],
     [
       roles.address,
       roles.interface.getSighash("removeProposalAuthorization"),
       Roles.Secretariat,
     ],
-    [roles.address, roles.interface.getSighash("upgradeTo"), Roles.Director],
     [roles.address, roles.interface.getSighash("upgradeTo"), Roles.Secretariat],
-    [token.address, token.interface.getSighash("upgradeTo"), Roles.Director],
     [token.address, token.interface.getSighash("upgradeTo"), Roles.Secretariat],
-    [
-      constitution.address,
-      constitution.interface.getSighash("upgradeTo"),
-      Roles.Director,
-    ],
     [
       constitution.address,
       constitution.interface.getSighash("upgradeTo"),
