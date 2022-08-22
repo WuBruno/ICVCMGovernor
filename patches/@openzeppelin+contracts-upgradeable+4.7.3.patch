@@ -1,5 +1,28 @@
+diff --git a/node_modules/@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol b/node_modules/@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol
+index eec8e9b..501fed8 100644
+--- a/node_modules/@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol
++++ b/node_modules/@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol
+@@ -379,7 +379,8 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
+         address[] memory targets,
+         uint256[] memory values,
+         bytes[] memory calldatas,
+-        bytes32 descriptionHash
++        bytes32 descriptionHash,
++        string calldata reason
+     ) internal virtual returns (uint256) {
+         uint256 proposalId = hashProposal(targets, values, calldatas, descriptionHash);
+         ProposalState status = state(proposalId);
+@@ -390,7 +391,7 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
+         );
+         _proposals[proposalId].canceled = true;
+ 
+-        emit ProposalCanceled(proposalId);
++        emit ProposalCanceled(proposalId, reason);
+ 
+         return proposalId;
+     }
 diff --git a/node_modules/@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol b/node_modules/@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol
-index 0f84c32..ad5604a 100644
+index 0f84c32..59225a2 100644
 --- a/node_modules/@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol
 +++ b/node_modules/@openzeppelin/contracts-upgradeable/governance/IGovernorUpgradeable.sol
 @@ -32,7 +32,7 @@ abstract contract IGovernorUpgradeable is Initializable, IERC165Upgradeable {
@@ -11,21 +34,16 @@ index 0f84c32..ad5604a 100644
          address proposer,
          address[] targets,
          uint256[] values,
-@@ -46,19 +46,19 @@ abstract contract IGovernorUpgradeable is Initializable, IERC165Upgradeable {
+@@ -46,7 +46,7 @@ abstract contract IGovernorUpgradeable is Initializable, IERC165Upgradeable {
      /**
       * @dev Emitted when a proposal is canceled.
       */
 -    event ProposalCanceled(uint256 proposalId);
-+    event ProposalCanceled(uint256 indexed proposalId);
++    event ProposalCanceled(uint256 proposalId, string reason);
  
      /**
       * @dev Emitted when a proposal is executed.
-      */
--    event ProposalExecuted(uint256 proposalId);
-+    event ProposalExecuted(uint256 indexed proposalId);
- 
-     /**
-      * @dev Emitted when a vote is cast without params.
+@@ -58,7 +58,7 @@ abstract contract IGovernorUpgradeable is Initializable, IERC165Upgradeable {
       *
       * Note: `support` values should be seen as buckets. Their interpretation depends on the voting module used.
       */

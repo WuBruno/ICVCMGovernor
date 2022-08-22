@@ -1,3 +1,4 @@
+import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { mine } from "@nomicfoundation/hardhat-network-helpers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
@@ -511,6 +512,13 @@ describe("Governor Contract", async () => {
         true
       );
     });
+
+    it("should abstain vote", async () => {
+      await voteProposal(governor, proposalId, 2);
+      expect(await governor.hasVoted(proposalId, director1.address)).to.equal(
+        true
+      );
+    });
   });
 
   describe("Proposals Outcomes", () => {
@@ -538,6 +546,8 @@ describe("Governor Contract", async () => {
   });
 
   describe("Regulators Decision", () => {
+    const cancellingReason = "cancelling";
+
     it("should succeed when regulator executes", async () => {
       await voteProposal(governor, proposalId);
       await voteProposal(governor.connect(director2), proposalId);
@@ -563,7 +573,8 @@ describe("Governor Contract", async () => {
         constitution.address,
         encodedFunctionCall,
         proposalDescription,
-        regulator
+        regulator,
+        cancellingReason
       );
 
       expect(
@@ -575,7 +586,6 @@ describe("Governor Contract", async () => {
     it("should fail execution by director", async () => {
       await voteProposal(governor, proposalId);
       await voteProposal(governor.connect(director2), proposalId);
-      // await mine(Number(process.env.VOTING_PERIOD));
 
       expect(
         executeProposal(
@@ -591,20 +601,35 @@ describe("Governor Contract", async () => {
     it("should cancel after success on votes", async () => {
       await voteProposal(governor, proposalId);
       await voteProposal(governor.connect(director2), proposalId);
-      // await mine(Number(process.env.VOTING_PERIOD));
 
       await cancelProposal(
         governor,
         constitution.address,
         encodedFunctionCall,
         proposalDescription,
-        regulator
+        regulator,
+        cancellingReason
       );
 
       expect(
         await governor.state(proposalId),
         "Proposal not cancelled"
       ).to.equal(ProposalState.Canceled);
+    });
+
+    it("should cancel and emit event with reason", async () => {
+      expect(
+        cancelProposal(
+          governor,
+          constitution.address,
+          encodedFunctionCall,
+          proposalDescription,
+          regulator,
+          cancellingReason
+        )
+      )
+        .to.emit(governor, "CancelProposal")
+        .withArgs(anyValue, cancellingReason);
     });
   });
 

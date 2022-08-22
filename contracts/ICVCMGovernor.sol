@@ -190,8 +190,10 @@ contract ICVCMGovernor is
         address[] memory targets,
         uint256[] memory values,
         bytes[] memory calldatas,
-        bytes32 descriptionHash
+        bytes32 descriptionHash,
+        string calldata reason
     ) public virtual onlyRegulator returns (uint256) {
-        return super._cancel(targets, values, calldatas, descriptionHash);
+        return
+            super._cancel(targets, values, calldatas, descriptionHash, reason);
     }
 }

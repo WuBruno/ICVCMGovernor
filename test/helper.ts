@@ -1,4 +1,3 @@
-import { mine } from "@nomicfoundation/hardhat-network-helpers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import * as dotenv from "dotenv";
 import { BigNumberish, ethers } from "ethers";
@@ -88,12 +87,19 @@ export const cancelProposal = async (
   executionAddress: string,
   encodedFunctionCall: string,
   description: string,
-  executor: SignerWithAddress
+  executor: SignerWithAddress,
+  reason: string
 ) => {
   const descriptionHash = ethers.utils.id(description);
   const executionTx = await governor
     .connect(executor)
-    .cancel([executionAddress], [0], [encodedFunctionCall], descriptionHash);
+    .cancel(
+      [executionAddress],
+      [0],
+      [encodedFunctionCall],
+      descriptionHash,
+      reason
+    );
   return executionTx.wait();
 };
 
