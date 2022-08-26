@@ -51,16 +51,6 @@ contract ICVCMGovernor is
         super._authorizeUpgrade(implementationAddress);
     }
 
-    function COUNTING_MODE()
-        public
-        pure
-        virtual
-        override(IGovernorUpgradeable, GovernorCountingSimpleUpgradeable)
-        returns (string memory)
-    {
-        return "support=bravo&quorum=against,for,abstain";
-    }
-
     // GovernorCountingSimple does not contribute againstVotes to quorum.
     function _quorumReached(uint256 proposalId)
         internal
@@ -177,12 +167,22 @@ contract ICVCMGovernor is
         return super.propose(targets, values, calldatas, description);
     }
 
+    function _castVote(
+        uint256 proposalId,
+        address account,
+        uint8 support,
+        string memory reason,
+        bytes memory params
+    ) internal virtual override onlyDirector returns (uint256) {
+        return super._castVote(proposalId, account, support, reason, params);
+    }
+
     function execute(
         address[] memory targets,
         uint256[] memory values,
         bytes[] memory calldatas,
         bytes32 descriptionHash
-    ) public payable virtual override returns (uint256) {
+    ) public payable virtual override onlyRegulator returns (uint256) {
         return super.execute(targets, values, calldatas, descriptionHash);
     }
 

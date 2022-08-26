@@ -49,4 +49,10 @@ describe("Token Contract", async () => {
 
     expect(await token2.getVersion()).to.equal(2);
   });
+
+  it("supports EIP165 interface", async () => {
+    expect(await governorToken.supportsInterface("0x01ffc9a7")).to.be.equal(
+      true
+    );
+  });
 });

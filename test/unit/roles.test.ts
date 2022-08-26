@@ -10,43 +10,61 @@ describe("Roles Contract", async () => {
   let governor: ICVCMGovernor;
   let roles: ICVCMRoles;
   let token: ICVCMToken;
-  let user: SignerWithAddress;
+  let director: SignerWithAddress;
+  let expert: SignerWithAddress;
+  let nonMember: SignerWithAddress;
   const role = Roles.Director;
   const name = "Alice";
 
   beforeEach(async () => {
-    [user] = await ethers.getSigners();
+    [director, expert, nonMember] = await ethers.getSigners();
 
     [token, governor, roles] = await deployContracts(undefined, false);
-    await addMember(roles, user.address, role, name);
+    await addMember(roles, director.address, role, name);
+    await addMember(roles, expert.address, Roles.Expert, "Eve");
   });
 
   it("should add member", async () => {
-    const member = await roles.getMember(user.address);
+    const member = await roles.getMember(director.address);
     expect(member.role, "Role does not match").to.equal(role);
     expect(
       ethers.utils.parseBytes32String(member.name),
       "Name does not match"
     ).to.equal(name);
-    expect(await token.balanceOf(user.address)).to.equal(1);
+    expect(await token.balanceOf(director.address)).to.equal(1);
   });
 
-  it("should remove member", async () => {
-    const tx = await roles.removeMember(user.address);
+  it("should remove director and its voting token", async () => {
+    const tx = await roles.removeMember(director.address);
     await tx.wait();
 
-    expect(roles.getMember(user.address)).to.be.revertedWith(
+    expect(roles.getMember(director.address)).to.be.revertedWith(
       "Member not found"
     );
 
-    expect(await token.balanceOf(user.address)).to.equal(0);
+    expect(await token.balanceOf(director.address)).to.equal(0);
+  });
+
+  it("should remove non-director", async () => {
+    const tx = await roles.removeMember(expert.address);
+    await tx.wait();
+
+    expect(roles.getMember(expert.address)).to.be.revertedWith(
+      "Member not found"
+    );
+  });
+
+  it("should fail to remove non-existing member", async () => {
+    expect(roles.removeMember(nonMember.address)).to.revertedWith(
+      "Member not found"
+    );
   });
 
   it("should get an array of members", async () => {
     const members = await roles.getMembers();
     expect(ethers.utils.parseBytes32String(members[0].name)).to.equal(name);
     expect(members[0].role).to.equal(role);
-    expect(members[0].memberAddress).to.equal(user.address);
+    expect(members[0].memberAddress).to.equal(director.address);
   });
 
   describe("Proposal Authorization Tests", () => {
@@ -72,6 +90,9 @@ describe("Roles Contract", async () => {
           Roles.Director
         )
       );
+    });
+    it("should get all current proposalAuthorizations", async () => {
+      expect(await roles.getProposalAuthorizations()).to.be.lengthOf(16);
     });
   });
 

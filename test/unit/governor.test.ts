@@ -541,6 +541,12 @@ describe("Governor Contract", async () => {
         true
       );
     });
+
+    it("should revert vote if it is not Director", async () => {
+      expect(
+        governor.castVoteWithReason(proposalId, 0, "Great example proposal")
+      ).to.be.revertedWith("Function restricted to Director");
+    });
   });
 
   describe("Proposals Outcomes", () => {

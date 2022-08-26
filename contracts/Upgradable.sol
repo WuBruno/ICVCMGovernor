@@ -10,6 +10,7 @@ abstract contract Upgradable is Initializable, UUPSUpgradeable {
 
     event ContractUpgraded(uint256 version);
 
+    // solhint-disable-next-line func-name-mixedcase
     function __Upgradeable_init() internal onlyInitializing {
         __UUPSUpgradeable_init();
         incrementVersion();

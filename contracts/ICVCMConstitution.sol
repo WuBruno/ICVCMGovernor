@@ -129,12 +129,13 @@ contract ICVCMConstitution is OwnableUpgradeable, Upgradable {
         return strategies;
     }
 
-    function getStrategy(uint256 strategyId)
+    function getStrategy(uint256 id)
         public
         view
+        hasStrategy(id)
         returns (string memory)
     {
-        return _strategies[strategyId];
+        return _strategies[id];
     }
 
     function addStrategy(string memory strategy) public onlyOwner {

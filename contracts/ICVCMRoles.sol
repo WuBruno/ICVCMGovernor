@@ -80,14 +80,6 @@ contract ICVCMRoles is OwnableUpgradeable, Upgradable {
         super._authorizeUpgrade(implementationAddress);
     }
 
-    function getProposalAuthorization(
-        address contractAddress,
-        bytes4 selector,
-        Role role
-    ) public view returns (uint256) {
-        return _proposalAuthorization[contractAddress][selector][role];
-    }
-
     function hasProposalAuthorization(
         address contractAddress,
         bytes4 selector,
@@ -161,8 +153,10 @@ contract ICVCMRoles is OwnableUpgradeable, Upgradable {
     ) public onlyOwner {
         require(!_memberSet.contains(memberAddress), "Member already exists");
 
-        Member memory member = Member(role, name);
-        _addMember(memberAddress, member);
+        _members[memberAddress] = Member(role, name);
+        _memberSet.add(memberAddress);
+
+        emit MemberAdded(memberAddress, role, name);
 
         // Mint _token if Director
         if (role == Role.Director) {
@@ -170,28 +164,20 @@ contract ICVCMRoles is OwnableUpgradeable, Upgradable {
         }
     }
 
-    function _addMember(address memberAddress, Member memory member) private {
-        _members[memberAddress] = member;
-        _memberSet.add(memberAddress);
-
-        emit MemberAdded(memberAddress, member.role, member.name);
-    }
-
     function removeMember(address memberAddress) public onlyOwner {
-        require(_memberSet.contains(memberAddress), "Member does not exist");
+        require(_memberSet.contains(memberAddress), "Member not found");
 
-        _removeMember(memberAddress);
-
+        // Remove token if director
         if (_members[memberAddress].role == Role.Director) {
             uint256 tokenId = _token.tokenOfOwnerByIndex(memberAddress, 0);
             _token.burn(tokenId);
         }
-    }
 
-    function _removeMember(address memberAddress) private {
+        // Update state
         _memberSet.remove(memberAddress);
         delete _members[memberAddress];
 
+        // Emit event
         emit MemberRemoved(
             memberAddress,
             _members[memberAddress].role,

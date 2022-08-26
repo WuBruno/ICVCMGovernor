@@ -2,9 +2,11 @@ import "@nomicfoundation/hardhat-chai-matchers";
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-etherscan";
 import "@openzeppelin/hardhat-upgrades";
+import "@typechain/ethers-v5";
 import "@typechain/hardhat";
 import * as dotenv from "dotenv";
 import "hardhat-abi-exporter";
+import "hardhat-contract-sizer";
 import "hardhat-gas-reporter";
 import { HardhatUserConfig } from "hardhat/config";
 import "solidity-coverage";
@@ -22,7 +24,7 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 20,
+        runs: 200,
       },
     },
   },
@@ -41,8 +43,8 @@ const config: HardhatUserConfig = {
     artifacts: "./artifacts",
   },
   gasReporter: {
-    enabled: process.env.REPORT_GAS !== undefined,
-    currency: "USD",
+    // enabled: process.env.REPORT_GAS !== undefined,
+    currency: "GBP",
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
