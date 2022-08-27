@@ -6,7 +6,7 @@ import { deployContracts, deployICVCMToken } from "~/services/deployment";
 import { ICVCMRoles, ICVCMToken } from "~/typechain";
 import { addMember } from "../helper";
 
-describe("Token Contract", async () => {
+describe("5 ICVCMToken Unit Tests", async () => {
   let governorToken: ICVCMToken;
   let roles: ICVCMRoles;
   let user: SignerWithAddress;
@@ -17,7 +17,7 @@ describe("Token Contract", async () => {
     [user, user2] = await ethers.getSigners();
   });
 
-  it("should delegate vote to self upon minting", async () => {
+  it("5.1 should delegate vote to self upon minting", async () => {
     await addMember(roles, user.address, Roles.Director, "director1");
     expect(await governorToken.delegates(user.address)).equal(user.address);
     expect(
@@ -26,18 +26,18 @@ describe("Token Contract", async () => {
     ).to.equal(1);
   });
 
-  it("should not have voting power without token", async () => {
+  it("5.2 should not have voting power without token", async () => {
     expect(await governorToken.getVotes(user.address)).to.equal(0);
   });
 
-  it("should throw error upon attempting to delegate vote", async () => {
+  it("5.3 should throw error upon attempting to delegate vote", async () => {
     await addMember(roles, user.address, Roles.Director, "director1");
     expect(governorToken.delegate(user2.address)).to.be.revertedWith(
       "disabled"
     );
   });
 
-  it("should upgrade successfully", async () => {
+  it("5.4 should upgrade successfully", async () => {
     const token: ICVCMToken = await deployICVCMToken();
     expect(await governorToken.getVersion()).to.equal(1);
 
@@ -50,7 +50,7 @@ describe("Token Contract", async () => {
     expect(await token2.getVersion()).to.equal(2);
   });
 
-  it("supports EIP165 interface", async () => {
+  it("5.5 supports EIP165 interface", async () => {
     expect(await governorToken.supportsInterface("0x01ffc9a7")).to.be.equal(
       true
     );

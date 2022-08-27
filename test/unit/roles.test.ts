@@ -6,7 +6,7 @@ import { deployContracts } from "~/services/deployment";
 import { ICVCMGovernor, ICVCMRoles, ICVCMToken } from "~/typechain";
 import { addMember } from "../helper";
 
-describe("Roles Contract", async () => {
+describe("4 ICVCMRoles Unit Tests", async () => {
   let governor: ICVCMGovernor;
   let roles: ICVCMRoles;
   let token: ICVCMToken;
@@ -24,7 +24,7 @@ describe("Roles Contract", async () => {
     await addMember(roles, expert.address, Roles.Expert, "Eve");
   });
 
-  it("should add member", async () => {
+  it("4.1 should add member", async () => {
     const member = await roles.getMember(director.address);
     expect(member.role, "Role does not match").to.equal(role);
     expect(
@@ -34,7 +34,7 @@ describe("Roles Contract", async () => {
     expect(await token.balanceOf(director.address)).to.equal(1);
   });
 
-  it("should remove director and its voting token", async () => {
+  it("4.2 should remove director and its voting token", async () => {
     const tx = await roles.removeMember(director.address);
     await tx.wait();
 
@@ -45,7 +45,7 @@ describe("Roles Contract", async () => {
     expect(await token.balanceOf(director.address)).to.equal(0);
   });
 
-  it("should remove non-director", async () => {
+  it("4.3 should remove non-director", async () => {
     const tx = await roles.removeMember(expert.address);
     await tx.wait();
 
@@ -54,21 +54,21 @@ describe("Roles Contract", async () => {
     );
   });
 
-  it("should fail to remove non-existing member", async () => {
+  it("4.4 should fail to remove non-existing member", async () => {
     expect(roles.removeMember(nonMember.address)).to.revertedWith(
       "Member not found"
     );
   });
 
-  it("should get an array of members", async () => {
+  it("4.5 should get an array of members", async () => {
     const members = await roles.getMembers();
     expect(ethers.utils.parseBytes32String(members[0].name)).to.equal(name);
     expect(members[0].role).to.equal(role);
     expect(members[0].memberAddress).to.equal(director.address);
   });
 
-  describe("Proposal Authorization Tests", () => {
-    it("should delete add member proposal authorization for director", async () => {
+  describe("4.6 Proposal Authorization Tests", () => {
+    it("4.6.1 should delete add member proposal authorization for director", async () => {
       await roles.removeProposalAuthorization(
         roles.address,
         roles.interface.getSighash("addMember"),
@@ -91,12 +91,12 @@ describe("Roles Contract", async () => {
         )
       );
     });
-    it("should get all current proposalAuthorizations", async () => {
+    it("4.6.2 should get all current proposalAuthorizations", async () => {
       expect(await roles.getProposalAuthorizations()).to.be.lengthOf(16);
     });
   });
 
-  it("should upgrade successfully", async () => {
+  it("4.7 should upgrade successfully", async () => {
     expect(await roles.getVersion()).to.equal(1);
 
     const Contract = await ethers.getContractFactory("ICVCMRoles");

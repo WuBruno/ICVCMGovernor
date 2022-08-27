@@ -94,7 +94,7 @@ contract ICVCMConstitution is OwnableUpgradeable, Upgradable {
         return _principles[id];
     }
 
-    function addPrinciple(string memory principle) public onlyOwner {
+    function addPrinciple(string calldata principle) public onlyOwner {
         _principleIdCounter.increment();
         uint256 id = _principleIdCounter.current();
         _principleIds.add(id);
@@ -102,7 +102,7 @@ contract ICVCMConstitution is OwnableUpgradeable, Upgradable {
         emit AddPrinciple(id, principle);
     }
 
-    function updatePrinciple(uint256 id, string memory newPrinciple)
+    function updatePrinciple(uint256 id, string calldata newPrinciple)
         public
         onlyOwner
         hasPrinciple(id)
@@ -138,7 +138,7 @@ contract ICVCMConstitution is OwnableUpgradeable, Upgradable {
         return _strategies[id];
     }
 
-    function addStrategy(string memory strategy) public onlyOwner {
+    function addStrategy(string calldata strategy) public onlyOwner {
         _strategyIdCounter.increment();
         uint256 id = _strategyIdCounter.current();
         _strategyIds.add(id);
@@ -146,7 +146,7 @@ contract ICVCMConstitution is OwnableUpgradeable, Upgradable {
         emit AddStrategy(id, strategy);
     }
 
-    function updateStrategy(uint256 id, string memory newStrategy)
+    function updateStrategy(uint256 id, string calldata newStrategy)
         public
         onlyOwner
         hasStrategy(id)

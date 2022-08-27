@@ -88,10 +88,18 @@ contract ICVCMRoles is OwnableUpgradeable, Upgradable {
         return _proposalAuthorization[contractAddress][selector][role] > 0;
     }
 
+    function getProposalAuthorizations()
+        public
+        view
+        returns (ProposalAuthorization[] memory)
+    {
+        return _allProposalAuthorization;
+    }
+
     function batchAddProposalAuthorization(
-        address[] memory contracts,
-        bytes4[] memory selectors,
-        Role[] memory roles
+        address[] calldata contracts,
+        bytes4[] calldata selectors,
+        Role[] calldata roles
     ) public onlyOwner {
         for (uint256 i = 0; i < contracts.length; ++i) {
             addProposalAuthorization(contracts[i], selectors[i], roles[i]);
@@ -136,14 +144,6 @@ contract ICVCMRoles is OwnableUpgradeable, Upgradable {
         // Delete
         _allProposalAuthorization.pop();
         delete _proposalAuthorization[contractAddress][selector][role];
-    }
-
-    function getProposalAuthorizations()
-        public
-        view
-        returns (ProposalAuthorization[] memory)
-    {
-        return _allProposalAuthorization;
     }
 
     function addMember(

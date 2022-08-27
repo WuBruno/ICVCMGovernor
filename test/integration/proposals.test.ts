@@ -12,7 +12,7 @@ import {
 } from "~/typechain";
 import { addMember, createAndPassProposal } from "../helper";
 
-describe("Proposal Integration Tests", async () => {
+describe("1 Proposal Integration Tests", async () => {
   let governor: ICVCMGovernor;
   let token: ICVCMToken;
   let constitution: ICVCMConstitution;
@@ -51,8 +51,8 @@ describe("Proposal Integration Tests", async () => {
     await mine(1);
   });
 
-  describe("Passing Types of Proposals", () => {
-    it("should pass a strategy proposal", async () => {
+  describe("1.1 Passing Types of Proposals", () => {
+    it("1.1.1 should pass a strategy proposal", async () => {
       const newStrategy = "The best strategy";
       const setProposalCall = constitution.interface.encodeFunctionData(
         "addStrategy",
@@ -73,7 +73,7 @@ describe("Proposal Integration Tests", async () => {
       expect(await constitution.getStrategy(1)).to.equal(newStrategy);
     });
 
-    it("should pass a principle proposal", async () => {
+    it("1.1.2 should pass a principle proposal", async () => {
       const newPrinciple = "The best principle 2";
       const setPrincipleCall = constitution.interface.encodeFunctionData(
         "addPrinciple",
@@ -94,7 +94,7 @@ describe("Proposal Integration Tests", async () => {
       expect(await constitution.getPrinciple(1)).to.equal(newPrinciple);
     });
 
-    it("should pass adding director proposal", async () => {
+    it("1.1.3 should pass adding director proposal", async () => {
       const description = "Adding new director";
       const name = ethers.utils.formatBytes32String("Director");
       const addMemberCall = roles.interface.encodeFunctionData("addMember", [
@@ -122,7 +122,7 @@ describe("Proposal Integration Tests", async () => {
       ).to.equal(1);
     });
 
-    it("should reject proposal when adding the member to the same role", async () => {
+    it("1.1.4 should reject proposal when adding the member to the same role", async () => {
       const description = "Adding new director";
       const name = ethers.utils.formatBytes32String("Director");
       const addMemberCall = roles.interface.encodeFunctionData("addMember", [
@@ -143,7 +143,7 @@ describe("Proposal Integration Tests", async () => {
       ).to.revertedWith("Member already exists");
     });
 
-    it("should pass remove member proposal", async () => {
+    it("1.1.5 should pass remove member proposal", async () => {
       const description = "Remove director";
       const removeMemberCall = roles.interface.encodeFunctionData(
         "removeMember",
@@ -169,7 +169,7 @@ describe("Proposal Integration Tests", async () => {
       ).to.equal(0);
     });
 
-    it("should pass set voting quorum proposal", async () => {
+    it("1.1.6 should pass set voting quorum proposal", async () => {
       const description = "Change Quorum";
       const newQuorum = 66;
       const updateQuorumCall = governor.interface.encodeFunctionData(
@@ -192,7 +192,7 @@ describe("Proposal Integration Tests", async () => {
       ).to.equal(newQuorum);
     });
 
-    it("should pass set voting period proposal", async () => {
+    it("1.1.7 should pass set voting period proposal", async () => {
       const description = "Change Voting Period";
       const newVotingPeriod = 100;
       const updateQuorumCall = governor.interface.encodeFunctionData(
