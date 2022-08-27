@@ -12,6 +12,8 @@
   },
   "scripts": {
     "web:start": "yarn workspace web dev",
+    "chain": "yarn workspace contracts chain",
+    "deploy_contracts": "yarn workspace contracts deploy",
     "postinstall": "patch-package"
   }
 }
