@@ -11,6 +11,7 @@ import "hardhat-gas-reporter";
 import { HardhatUserConfig } from "hardhat/config";
 import "solidity-coverage";
 import "tsconfig-paths/register";
+import TestAccounts from "./testAccounts.json";
 
 import "~/tasks";
 
@@ -31,8 +32,11 @@ const config: HardhatUserConfig = {
   networks: {
     goerli: {
       url: process.env.GOERLI_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      accounts: TestAccounts,
+    },
+    sepolia: {
+      url: process.env.SEPOLIA_URL || "",
+      accounts: TestAccounts,
     },
     hardhat: {},
   },

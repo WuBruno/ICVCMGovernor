@@ -48,6 +48,7 @@ export async function deployContracts(
     token.address,
     roles.address
   );
+  console.log("Contracts Deployed");
 
   const authorizations = [
     [roles.address, roles.interface.getSighash("addMember"), Roles.Director],
@@ -122,16 +123,22 @@ export async function deployContracts(
     authorizations.map((v) => v[1]),
     authorizations.map((v) => v[2])
   );
+  console.log("Proposal Authorizations Added");
 
   // Assign token contract ownership to roles contract
   await token.grantRole(await token.ISSUER_ROLE(), roles.address);
+  console.log("Token Issuer role assigned to ICVCMRoles");
+
   await token.transferAdmin(governor.address);
+  console.log("ICVCMToken Admin role assigned to ICVCMGovernor");
 
   await constitution.transferOwnership(governor.address);
+  console.log("ICVCMConstitution ownership transferred to ICVCMGovernor");
 
   preRoleOwnershipTransfer && (await preRoleOwnershipTransfer(roles));
   enableRoleOwnershipTransfer &&
     (await roles.transferOwnership(governor.address));
+  console.log("ICVCMRoles ownership transferred to ICVCMGovernor");
 
   return [token, governor, roles, constitution];
 }
