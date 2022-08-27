@@ -1,0 +1,12 @@
+{
+  "name": "ICVCMGovernance",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "lerna": "^5.4.3"
+  }
+}
