@@ -54,7 +54,7 @@
   "dependencies": {
     "@openzeppelin/contracts-upgradeable": "^4.7.3"
   },
-  "name": "Smart_Contracts_ICVCM",
+  "name": "contracts",
   "version": "1.0.0",
   "author": "Bruno Wu <brunowu2000@gmail.com>",
   "license": "MIT"
