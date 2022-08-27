@@ -1,5 +1,5 @@
 diff --git a/node_modules/@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol b/node_modules/@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol
-index eec8e9b..501fed8 100644
+index eec8e9b..b32bba9 100644
 --- a/node_modules/@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol
 +++ b/node_modules/@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol
 @@ -379,7 +379,8 @@ abstract contract GovernorUpgradeable is Initializable, ContextUpgradeable, ERC1
@@ -17,7 +17,7 @@ index eec8e9b..501fed8 100644
          _proposals[proposalId].canceled = true;
  
 -        emit ProposalCanceled(proposalId);
-+        emit ProposalCanceled(proposalId, reason);
++        emit ProposalCanceled(proposalId,reason);
  
          return proposalId;
      }
