@@ -62,13 +62,13 @@ yarn contracts:test
     yarn chain
     ```
 
-2. Run the deployment script to deploy the ICVCM smart contracts on the local testnet
+2. Open another terminal window and run the deployment script to deploy the ICVCM smart contracts on the local testnet
 
     ```bash
     yarn deploy_contracts
     ```
 
-3. Run the frontend web app client. The website will available on http://127.0.0.1:3000/
+3. Open another terminal window and run the frontend web app client. The website will available on http://127.0.0.1:3000/
 
     ```bash
     yarn web:start
@@ -107,7 +107,7 @@ Additional help for adding custom networks on Metamask can be found [here](https
 
 #### Hardhat Network Credentials
 
-* Network Name: Hardhat Network 
+* Network Name: Hardhat Network
 * New RPC URL: http://127.0.0.1:8545/
 * Chain ID: 31337
 * Currency Symbol: GO
