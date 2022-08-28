@@ -518,6 +518,80 @@ describe("3 ICVCMGovernor Unit Tests", async () => {
           "Member not found"
         ));
     });
+
+    describe("3.2.15 Proposal Authorization for Adding New Proposal Authorizations", () => {
+      const addAuthorizationProposal = async (member: SignerWithAddress) => {
+        const encodedFunctionCall = roles.interface.encodeFunctionData(
+          "addProposalAuthorization",
+          [
+            roles.address,
+            roles.interface.getSighash("addProposalAuthorization"),
+            Roles.Director,
+          ]
+        );
+        return createProposal(
+          governor.connect(member),
+          roles.address,
+          encodedFunctionCall,
+          "Add Authorization Proposal"
+        );
+      };
+      it("3.2.15.1 should prevent director from creating add authorization proposal", async () =>
+        expect(addAuthorizationProposal(director1)).to.revertedWith(
+          "Unauthorized"
+        ));
+      it("3.2.15.2 should prevent expert from creating add authorization proposal", async () =>
+        expect(addAuthorizationProposal(expert)).to.revertedWith(
+          "Unauthorized"
+        ));
+      it("3.2.15.3 should allow secretariat to create upgrade contract proposal", async () =>
+        addAuthorizationProposal(secretariat));
+      it("3.2.15.4 should prevent regulator from creating add authorization proposal", async () =>
+        expect(addAuthorizationProposal(regulator)).to.revertedWith(
+          "Unauthorized"
+        ));
+      it("3.2.15.5 should prevent non-member from creating add authorization proposal", async () =>
+        expect(addAuthorizationProposal(user)).to.revertedWith(
+          "Member not found"
+        ));
+    });
+
+    describe("3.2.16 Proposal Authorization for Removing Proposal Authorizations", () => {
+      const RemoveProposalAuthorization = async (member: SignerWithAddress) => {
+        const encodedFunctionCall = roles.interface.encodeFunctionData(
+          "removeProposalAuthorization",
+          [
+            roles.address,
+            roles.interface.getSighash("addProposalAuthorization"),
+            Roles.Secretariat,
+          ]
+        );
+        return createProposal(
+          governor.connect(member),
+          roles.address,
+          encodedFunctionCall,
+          "Remove Authorization Proposal"
+        );
+      };
+      it("3.2.16.1 should prevent director from creating remove authorization proposal", async () =>
+        expect(RemoveProposalAuthorization(director1)).to.revertedWith(
+          "Unauthorized"
+        ));
+      it("3.2.16.2 should prevent expert from creating remove authorization proposal", async () =>
+        expect(RemoveProposalAuthorization(expert)).to.revertedWith(
+          "Unauthorized"
+        ));
+      it("3.2.16.3 should allow secretariat to create upgrade contract proposal", async () =>
+        RemoveProposalAuthorization(secretariat));
+      it("3.2.16.4 should prevent regulator from creating remove authorization proposal", async () =>
+        expect(RemoveProposalAuthorization(regulator)).to.revertedWith(
+          "Unauthorized"
+        ));
+      it("3.2.16.5 should prevent non-member from creating remove authorization proposal", async () =>
+        expect(RemoveProposalAuthorization(user)).to.revertedWith(
+          "Member not found"
+        ));
+    });
   });
 
   describe("3.3 Vote on Proposals", () => {
