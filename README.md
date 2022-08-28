@@ -44,8 +44,9 @@ Tests can be run to also show its coverage information at the end. Run the comma
 yarn contracts:test
 ```
 
-## Running
+## Usage
 
+It is recommended to run the application locally to have a seamless experience trying out all the features of the application in swift manner without having to wait for block confirmations. However, for a more realistic usage experience run with the Goerli Testnet.
 ### Local
 
 #### Prerequisites
@@ -98,6 +99,12 @@ The ICVCM smart contracts have already been deployed to the Goerli testnet and t
 ## Deployment
 
 TBA.
+
+## Disclaimer
+
+Disclaimer, the prototype built is by no means ready to be used in a production environment. If anyone chooses to use the code for real governance use cases it should go through thorough security audits and ensure it is regulator proof. The author will not be responsible for the legal and ethical issues arising from the software. - Blockchain protocol prone to cyberattack
+
+
 
 ## Extras
 
