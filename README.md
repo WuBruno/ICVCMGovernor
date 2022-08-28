@@ -104,7 +104,11 @@ TBA.
 
 Disclaimer, the prototype built is by no means ready to be used in a production environment. If anyone chooses to use the code for real governance use cases it should go through thorough security audits and ensure it is regulator proof. The author will not be responsible for the legal and ethical issues arising from the software. - Blockchain protocol prone to cyberattack
 
+## Troubleshooting
 
+### Metamask Account Reset
+
+Metamask accounts will store locally the transactions submitted by the DApp. Sometimes, as we have run many instances of the app and created many different proposals, the Metamask will fail to submit new transactions on a given accounts. To solve this problem, just reset the account by going to: `Settings > Advanced > Reset Account`.
 
 ## Extras
 
