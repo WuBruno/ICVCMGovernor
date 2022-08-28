@@ -553,7 +553,6 @@ describe("3 ICVCMGovernor Unit Tests", async () => {
     it("3.4.1 should vote for and succeed proposal", async () => {
       await voteProposal(governor, proposalId);
       await voteProposal(governor.connect(director2), proposalId);
-      // await mine(Number(process.env.VOTING_PERIOD));
 
       expect(
         await governor.state(proposalId),
@@ -564,7 +563,6 @@ describe("3 ICVCMGovernor Unit Tests", async () => {
     it("3.4.2 should vote against proposal and defeat", async () => {
       await voteProposal(governor, proposalId, 0);
       await voteProposal(governor.connect(director2), proposalId, 0);
-      // await mine(Number(process.env.VOTING_PERIOD));
 
       expect(
         await governor.state(proposalId),
@@ -579,7 +577,6 @@ describe("3 ICVCMGovernor Unit Tests", async () => {
     it("3.5.1 should succeed when regulator executes", async () => {
       await voteProposal(governor, proposalId);
       await voteProposal(governor.connect(director2), proposalId);
-      // await mine(Number(process.env.VOTING_PERIOD));
 
       await executeProposal(
         governor,

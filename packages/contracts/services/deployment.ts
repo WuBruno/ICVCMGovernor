@@ -39,7 +39,8 @@ export const deployICVCMConstitution = async (): Promise<ICVCMConstitution> => {
 
 export async function deployContracts(
   preRoleOwnershipTransfer?: (roles: ICVCMRoles) => Promise<any>,
-  enableRoleOwnershipTransfer = true
+  enableRoleOwnershipTransfer = true,
+  showLogs?: boolean
 ): Promise<[ICVCMToken, ICVCMGovernor, ICVCMRoles, ICVCMConstitution]> {
   const token: ICVCMToken = await deployICVCMToken();
   const constitution: ICVCMConstitution = await deployICVCMConstitution();
@@ -48,7 +49,7 @@ export async function deployContracts(
     token.address,
     roles.address
   );
-  console.log("Contracts Deployed");
+  showLogs && console.log("Contracts Deployed");
 
   const authorizations = [
     [roles.address, roles.interface.getSighash("addMember"), Roles.Director],
@@ -123,22 +124,23 @@ export async function deployContracts(
     authorizations.map((v) => v[1]),
     authorizations.map((v) => v[2])
   );
-  console.log("Proposal Authorizations Added");
+  showLogs && console.log("Proposal Authorizations Added");
 
   // Assign token contract ownership to roles contract
   await token.grantRole(await token.ISSUER_ROLE(), roles.address);
-  console.log("Token Issuer role assigned to ICVCMRoles");
+  showLogs && console.log("Token Issuer role assigned to ICVCMRoles");
 
   await token.transferAdmin(governor.address);
-  console.log("ICVCMToken Admin role assigned to ICVCMGovernor");
+  showLogs && console.log("ICVCMToken Admin role assigned to ICVCMGovernor");
 
   await constitution.transferOwnership(governor.address);
-  console.log("ICVCMConstitution ownership transferred to ICVCMGovernor");
+  showLogs &&
+    console.log("ICVCMConstitution ownership transferred to ICVCMGovernor");
 
   preRoleOwnershipTransfer && (await preRoleOwnershipTransfer(roles));
   enableRoleOwnershipTransfer &&
     (await roles.transferOwnership(governor.address));
-  console.log("ICVCMRoles ownership transferred to ICVCMGovernor");
+  showLogs && console.log("ICVCMRoles ownership transferred to ICVCMGovernor");
 
   return [token, governor, roles, constitution];
 }

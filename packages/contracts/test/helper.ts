@@ -38,8 +38,6 @@ export const createAndPassProposal = async (
     await voteProposal(governor.connect(voter), proposalId);
   }
 
-  // await mine(Number(process.env.VOTING_PERIOD));
-
   await executeProposal(
     governor,
     executionAddress,

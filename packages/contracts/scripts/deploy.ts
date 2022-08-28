@@ -20,15 +20,24 @@ async function main() {
   const accounts = await ethers.getSigners();
 
   const [ICVCMToken, ICVCMGovernor, ICVCMRoles, ICVCMConstitution] =
-    await deployContracts(async (roles) => {
-      // Mint Tokens -- only set first 2 as directors
-      await addMember(roles, accounts[0].address, Roles.Director, `David`);
-      await addMember(roles, accounts[1].address, Roles.Director, `Daniel`);
-      await addMember(roles, accounts[2].address, Roles.Director, `Daisy`);
-      await addMember(roles, accounts[3].address, Roles.Expert, "Eva");
-      await addMember(roles, accounts[4].address, Roles.Secretariat, "Sophia");
-      await addMember(roles, accounts[5].address, Roles.Regulator, "Riley");
-    });
+    await deployContracts(
+      async (roles) => {
+        // Mint Tokens -- only set first 2 as directors
+        await addMember(roles, accounts[0].address, Roles.Director, `David`);
+        await addMember(roles, accounts[1].address, Roles.Director, `Daniel`);
+        await addMember(roles, accounts[2].address, Roles.Director, `Daisy`);
+        await addMember(roles, accounts[3].address, Roles.Expert, "Eva");
+        await addMember(
+          roles,
+          accounts[4].address,
+          Roles.Secretariat,
+          "Sophia"
+        );
+        await addMember(roles, accounts[5].address, Roles.Regulator, "Riley");
+      },
+      true,
+      true
+    );
 
   console.log("ICVCMToken deployed to:", ICVCMToken.address);
   console.log("ICVCMGovernor deployed to:", ICVCMGovernor.address);

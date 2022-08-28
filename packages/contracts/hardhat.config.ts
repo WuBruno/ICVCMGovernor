@@ -35,10 +35,9 @@ const config: HardhatUserConfig = {
       accounts: TestAccounts,
     },
     sepolia: {
-      url: process.env.SEPOLIA_URL || "",
+      url: "https://rpc2.sepolia.org",
       accounts: TestAccounts,
     },
-    hardhat: {},
   },
   paths: {
     sources: "./contracts",
@@ -47,8 +46,9 @@ const config: HardhatUserConfig = {
     artifacts: "./artifacts",
   },
   gasReporter: {
-    enabled: process.env.REPORT_GAS !== undefined,
+    enabled: true,
     currency: "GBP",
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY,
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,

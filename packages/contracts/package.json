@@ -5,6 +5,7 @@
     "accounts": "yarn hardhat accounts",
     "migrate": "cp -r ./abi/ ../web/contracts && cp ./contract.json ../web/",
     "test": "yarn hardhat test",
+    "coverage": "yarn hardhat coverage",
     "types": "rm -r ./typechain; yarn hardhat typechain",
     "deploy_upgrade": "yarn hardhat upgrade --network localhost --contract ",
     "deploy": "yarn hardhat run --network localhost scripts/deploy.ts && yarn migrate",
