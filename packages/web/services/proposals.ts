@@ -14,7 +14,7 @@ import {
   ICVCMToken__factory,
 } from "~/contracts/types";
 import { ProposalCreatedEvent } from "~/contracts/types/Governor";
-import { parseBlockToDays } from "~/util";
+import { parseBlockToDays } from "~/utils";
 import { getMember, parseProposalAuthorization } from "./members";
 
 export const propose = async (

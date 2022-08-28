@@ -31,7 +31,7 @@ import {
   getStrategiesHistory,
 } from "~/services/constitution";
 import { getQuorum, getVotingPeriod } from "~/services/proposals";
-import { parseBlockToDays, parseDaysToBlocks } from "~/util";
+import { parseBlockToDays, parseDaysToBlocks } from "~/utils";
 import ConstitutionTimeline from "./ConstitutionTimeline";
 import ContractInfo from "./ContractInfo";
 import ProposalAuthorizationList from "./ProposalAuthorizationList";

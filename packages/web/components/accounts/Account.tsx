@@ -3,9 +3,9 @@ import { useWeb3React } from "@web3-react/core";
 import { UserRejectedRequestError } from "@web3-react/injected-connector";
 
 import { useEffect, useState } from "react";
-import { injected } from "~/connectors";
+import { injected } from "~/config/connectors";
 import { useENSName, useMetaMaskOnboarding } from "~/hooks/utils";
-import { formatEtherscanLink, shortenHex } from "~/util";
+import { formatEtherscanLink, shortenHex } from "~/utils";
 
 type AccountProps = {
   triedToEagerConnect: boolean;

@@ -3,7 +3,7 @@ import { Web3ReactProvider } from "@web3-react/core";
 import type { AppProps } from "next/app";
 import { RecoilRoot } from "recoil";
 import { GlobalLoader } from "~/components/common";
-import getLibrary from "~/getLibrary";
+import getLibrary from "~/config/getLibrary";
 import "~/styles/globals.css";
 import { theme } from "~/styles/theme";
 

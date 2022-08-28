@@ -4,7 +4,7 @@ import useSWR from "swr";
 import { useAsync } from "~/hooks/common";
 import { useICVCMGovernor } from "~/hooks/contracts";
 import { getVotingPeriod, proposeVotingPeriod } from "~/services/proposals";
-import { parseDaysToBlocks } from "~/util";
+import { parseDaysToBlocks } from "~/utils";
 
 type Props = { setOpen: (open: boolean) => void };
 

@@ -11,7 +11,7 @@ import "hardhat-gas-reporter";
 import { HardhatUserConfig } from "hardhat/config";
 import "solidity-coverage";
 import "tsconfig-paths/register";
-import TestAccounts from "./testAccounts.json";
+import TestAccounts from "./config/testAccounts.json";
 
 import "~/tasks";
 
