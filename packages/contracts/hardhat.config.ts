@@ -46,7 +46,7 @@ const config: HardhatUserConfig = {
     artifacts: "./artifacts",
   },
   gasReporter: {
-    enabled: true,
+    enabled: process.env.REPORT_GAS !== undefined,
     currency: "GBP",
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
   },

@@ -13,9 +13,14 @@
   "scripts": {
     "web:start": "yarn workspace web dev",
     "chain": "yarn workspace contracts chain",
-    "contracts:deploy": "yarn workspace contracts deploy",
+    "contracts:deploy": "yarn workspace contracts deploy && yarn workspace web types",
+    "contracts:deploy_upgrade": "yarn workspace contracts deploy_upgrade && yarn workspace web types",
     "contracts:test": "yarn workspace contracts test",
     "contracts:coverage": "yarn workspace contracts coverage",
+    "contracts:gas": "yarn workspace contracts gas",
+    "contracts:deploy:goerli": "yarn workspace contracts deploy:goerli && yarn workspace web types",
+    "contracts:deploy_upgrade:goerli": "yarn workspace contracts deploy_upgrade:goerli && yarn workspace web types",
+    "lint": "yarn workspace contracts lint && yarn workspace web lint",
     "postinstall": "patch-package"
   }
 }

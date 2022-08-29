@@ -30,7 +30,7 @@ The following environment variables on `./packages/contracts/.env` can be setup 
 
 ### Automated Tests
 
-Runs all the unit and integration tests and includes a gas report at the end
+Runs all the unit and integration tests
 
 ```bash
 yarn contracts:test
@@ -42,6 +42,12 @@ Tests can be run to also show its coverage information at the end. Run the comma
 
 ```bash
 yarn contracts:test
+```
+
+### Gas Report
+
+```bash
+yarn contracts:gas
 ```
 
 ## Usage
